@@ -1,8 +1,5 @@
-[phases.setup]
-nixPkgs = ['python311', 'pip']
-
-[phases.install]
-cmds = ['cd crypto-intelligence', 'python -m pip install -r requirements.txt']
+[variables]
+NIXPACKS_PYTHON_VERSION = "3.11"
 
 [start]
-cmd = 'cd crypto-intelligence && python -m gunicorn app:app --host 0.0.0.0 --port $PORT'
+cmd = "cd crypto-intelligence && gunicorn app:app --host 0.0.0.0 --port $PORT"

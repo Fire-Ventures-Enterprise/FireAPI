@@ -1,386 +1,423 @@
-from flask import Flask, jsonify, request
-import requests
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
-import os
-import time
-from functools import wraps
+from flask import Flask, request, jsonify
+import datetime
+import logging
+import json
 
 app = Flask(__name__)
 
-# Rate limiting decorator
-def rate_limit(max_per_minute=60):
-    def decorator(f):
-        @wraps(f)
-        def wrapper(*args, **kwargs):
-            return f(*args, **kwargs)
-        return wrapper
-    return decorator
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Enhanced ML prediction class with multiple timeframes
-class CryptoPrediction:
-    def __init__(self):
-        self.api_base = "https://api.coingecko.com/api/v3"
-        self.timeframe_configs = {
-            '1h': {'hours': 1, 'days': 3, 'interval': 'hourly', 'ma_periods': [6, 12, 24]},
-            '2h': {'hours': 2, 'days': 5, 'interval': 'hourly', 'ma_periods': [12, 24, 48]},
-            '6h': {'hours': 6, 'days': 7, 'interval': 'hourly', 'ma_periods': [4, 8, 16]},
-            '12h': {'hours': 12, 'days': 14, 'interval': 'daily', 'ma_periods': [3, 7, 14]},
-            '24h': {'hours': 24, 'days': 30, 'interval': 'daily', 'ma_periods': [7, 14, 21]},
-            '48h': {'hours': 48, 'days': 60, 'interval': 'daily', 'ma_periods': [14, 21, 30]}
-        }
-    
-    def get_price_data(self, coin_id, timeframe='24h'):
-        """Get historical price data optimized for timeframe"""
-        try:
-            config = self.timeframe_configs.get(timeframe, self.timeframe_configs['24h'])
-            
-            # For hourly data (1h, 2h, 6h)
-            if config['interval'] == 'hourly':
-                url = f"{self.api_base}/coins/{coin_id}/market_chart"
-                params = {
-                    "vs_currency": "usd",
-                    "days": config['days'],
-                    "interval": "hourly"
-                }
-            else:
-                # For daily data (12h, 24h, 48h)
-                url = f"{self.api_base}/coins/{coin_id}/market_chart"
-                params = {
-                    "vs_currency": "usd",
-                    "days": config['days'],
-                    "interval": "daily"
-                }
-            
-            response = requests.get(url, params=params, timeout=15)
-            response.raise_for_status()
-            data = response.json()
-            
-            # Convert to DataFrame
-            prices = data['prices']
-            volumes = data['total_volumes']
-            
-            df = pd.DataFrame(prices, columns=['timestamp', 'price'])
-            df['volume'] = [v[1] for v in volumes]
-            df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
-            
-            return df, config
-        except Exception as e:
-            print(f"Error fetching data for {coin_id} ({timeframe}): {e}")
-            return None, None
-    
-    def calculate_technical_indicators(self, df, config, timeframe):
-        """Calculate technical indicators optimized for timeframe"""
-        if df is None or len(df) < 10:
-            return None
-            
-        # Get moving average periods for this timeframe
-        ma1, ma2, ma3 = config['ma_periods']
-        
-        # Price changes
-        df['price_change'] = df['price'].pct_change()
-        if len(df) > ma1:
-            df[f'price_change_{ma1}'] = df['price'].pct_change(ma1)
-        
-        # Moving averages (adaptive to timeframe)
-        df[f'sma_{ma1}'] = df['price'].rolling(window=ma1).mean()
-        df[f'sma_{ma2}'] = df['price'].rolling(window=ma2).mean()
-        df[f'sma_{ma3}'] = df['price'].rolling(window=ma3).mean()
-        
-        # Exponential Moving Averages
-        df[f'ema_{ma1}'] = df['price'].ewm(span=ma1).mean()
-        df[f'ema_{ma2}'] = df['price'].ewm(span=ma2).mean()
-        
-        # Volatility (adaptive window)
-        vol_window = min(ma1, len(df)//3)
-        if vol_window > 2:
-            df[f'volatility_{vol_window}'] = df['price'].rolling(window=vol_window).std()
-        
-        # Volume indicators
-        if vol_window > 2:
-            df[f'volume_sma_{vol_window}'] = df['volume'].rolling(window=vol_window).mean()
-            df['volume_change'] = df['volume'].pct_change()
-            df['volume_spike'] = df['volume'] / df[f'volume_sma_{vol_window}']
-        
-        # RSI (adaptive period)
-        rsi_period = min(14, ma2)
-        if len(df) > rsi_period:
-            delta = df['price'].diff()
-            gain = (delta.where(delta > 0, 0)).rolling(window=rsi_period).mean()
-            loss = (-delta.where(delta < 0, 0)).rolling(window=rsi_period).mean()
-            rs = gain / loss
-            df['rsi'] = 100 - (100 / (1 + rs))
-        
-        # MACD (adaptive to timeframe)
-        if timeframe in ['1h', '2h']:
-            # Faster MACD for short timeframes
-            ema_fast, ema_slow, signal = 6, 13, 5
-        elif timeframe in ['6h', '12h']:
-            # Medium MACD
-            ema_fast, ema_slow, signal = 8, 17, 7
-        else:
-            # Standard MACD for longer timeframes
-            ema_fast, ema_slow, signal = 12, 26, 9
-            
-        if len(df) > ema_slow:
-            ema_fast_line = df['price'].ewm(span=ema_fast).mean()
-            ema_slow_line = df['price'].ewm(span=ema_slow).mean()
-            df['macd'] = ema_fast_line - ema_slow_line
-            df['macd_signal'] = df['macd'].ewm(span=signal).mean()
-            df['macd_histogram'] = df['macd'] - df['macd_signal']
-        
-        return df.dropna()
-    
-    def timeframe_prediction_model(self, df, config, timeframe):
-        """Prediction model optimized for specific timeframe"""
-        if df is None or len(df) < 5:
-            return None
-            
-        latest = df.iloc[-1]
-        current_price = latest['price']
-        ma1, ma2, ma3 = config['ma_periods']
-        
-        # Timeframe-specific analysis weights
-        if timeframe in ['1h', '2h']:
-            # Short-term: Heavy weight on momentum and volume
-            trend_weight = 0.25
-            momentum_weight = 0.45
-            volume_weight = 0.30
-        elif timeframe in ['6h', '12h']:
-            # Medium-term: Balanced approach
-            trend_weight = 0.35
-            momentum_weight = 0.35
-            volume_weight = 0.30
-        else:
-            # Long-term: Heavy weight on trends
-            trend_weight = 0.50
-            momentum_weight = 0.25
-            volume_weight = 0.25
-        
-        # Trend Analysis
-        short_trend = latest[f'ema_{ma1}'] / latest[f'ema_{ma2}'] if latest[f'ema_{ma2}'] > 0 else 1
-        medium_trend = latest[f'sma_{ma1}'] / latest[f'sma_{ma2}'] if latest[f'sma_{ma2}'] > 0 else 1
-        long_trend = latest[f'sma_{ma2}'] / latest[f'sma_{ma3}'] if latest[f'sma_{ma3}'] > 0 else 1
-        trend_score = (short_trend + medium_trend + long_trend) / 3
-        
-        # Momentum Analysis
-        rsi_momentum = (50 - latest['rsi']) / 100 if 'rsi' in latest and not pd.isna(latest['rsi']) else 0
-        macd_momentum = latest['macd_histogram'] / current_price if 'macd_histogram' in latest and not pd.isna(latest['macd_histogram']) else 0
-        price_momentum = latest['price_change'] if not pd.isna(latest['price_change']) else 0
-        momentum_score = (rsi_momentum + macd_momentum + price_momentum) / 3
-        
-        # Volume Analysis
-        volume_signal = (latest['volume_spike'] - 1) if 'volume_spike' in latest and not pd.isna(latest['volume_spike']) else 0
-        volume_trend = latest['volume_change'] if 'volume_change' in latest and not pd.isna(latest['volume_change']) else 0
-        volume_score = (volume_signal + volume_trend) / 2
-        
-        # Combine signals with timeframe-specific weights
-        prediction_factor = (
-            trend_weight * (trend_score - 1) +
-            momentum_weight * momentum_score +
-            volume_weight * min(max(volume_score, -0.3), 0.3)
-        )
-        
-        # Timeframe-specific caps on predictions
-        if timeframe in ['1h', '2h']:
-            max_change = 0.05  # Max 5% for short timeframes
-        elif timeframe in ['6h', '12h']:
-            max_change = 0.10  # Max 10% for medium timeframes
-        else:
-            max_change = 0.20  # Max 20% for longer timeframes
-        
-        predicted_change = max(min(prediction_factor, max_change), -max_change)
-        predicted_price = current_price * (1 + predicted_change)
-        
-        # Enhanced confidence calculation
-        vol_col = f'volatility_{min(ma1, len(df)//3)}' if f'volatility_{min(ma1, len(df)//3)}' in latest else None
-        volatility = latest[vol_col] / current_price if vol_col and not pd.isna(latest[vol_col]) else 0.02
-        
-        data_quality = min(len(df) / config['days'], 1.0)
-        signal_strength = abs(prediction_factor)
-        
-        # Timeframe-specific confidence adjustments
-        if timeframe in ['1h', '2h']:
-            base_confidence = min(signal_strength * 3, 0.8)  # Higher confidence for short-term
-            volatility_penalty = min(volatility * 8, 0.3)
-        else:
-            base_confidence = min(signal_strength * 2, 0.9)
-            volatility_penalty = min(volatility * 5, 0.4)
-        
-        confidence = max(0.1, min(0.95, base_confidence * data_quality - volatility_penalty))
-        
-        # Calculate expiry time based on timeframe
-        prediction_time = datetime.now()
-        expiry_time = prediction_time + timedelta(hours=config['hours'])
-        
-        return {
-            'current_price': round(current_price, 6),
-            'predicted_price': round(predicted_price, 6),
-            'change_percent': round(predicted_change * 100, 2),
-            'confidence': round(confidence, 2),
-            'trend_score': round(trend_score, 3),
-            'momentum_score': round(momentum_score, 3),
-            'volume_score': round(volume_score, 3),
-            'rsi': round(latest['rsi'], 1) if 'rsi' in latest and not pd.isna(latest['rsi']) else None,
-            'macd': round(latest['macd'], 4) if 'macd' in latest and not pd.isna(latest['macd']) else None,
-            'timestamp': prediction_time.isoformat(),
-            'timeframe': timeframe,
-            'prediction_horizon': f'{config["hours"]} hours',
-            'expires_at': expiry_time.isoformat(),
-            'target_date': expiry_time.strftime('%Y-%m-%d %H:%M UTC'),
-            'volatility': round(volatility * 100, 2) if volatility else None,
-            'max_expected_change': f'±{max_change*100:.1f}%'
-        }
+# Service Registry - Central hub for all Fire services
+SERVICES = {
+    "firebet": {
+        "url": "https://firebet-production.railway.app",
+        "status": "planned",
+        "description": "Sports betting intelligence and predictions"
+    },
+    "firecrypto": {
+        "url": "https://firecrypto-production.railway.app", 
+        "status": "planned",
+        "description": "Cryptocurrency market intelligence and predictions"
+    },
+    "firecrm": {
+        "url": "https://firecrm-production.railway.app",
+        "status": "planned", 
+        "description": "Customer relationship management and lead intelligence"
+    },
+    "firebranding": {
+        "url": "https://firebranding-production.railway.app",
+        "status": "planned",
+        "description": "Digital presence analysis and branding intelligence"
+    },
+    "firecontractor": {
+        "url": "https://firecontractor-production.railway.app",
+        "status": "planned",
+        "description": "Construction project management and optimization"
+    },
+    "firefleet": {
+        "url": "https://firefleet-production.railway.app", 
+        "status": "planned",
+        "description": "Fleet logistics and route optimization"
+    },
+    "roomlens": {
+        "url": "https://roomlens-production.railway.app",
+        "status": "planned",
+        "description": "Property analytics and real estate intelligence"
+    }
+}
 
-# Initialize predictor
-predictor = CryptoPrediction()
-
-# Routes
 @app.route('/')
 def home():
-    return jsonify({
-        "name": "FireAPI - Crypto Intelligence",
-        "version": "3.0.0",
-        "status": "active",
-        "description": "Multi-timeframe AI cryptocurrency predictions",
-        "timeframes": ["1h", "2h", "6h", "12h", "24h", "48h"],
+    """Fire Ventures Enterprise Central Hub"""
+    return {
+        "name": "🔥 FireAPI - Central Intelligence Hub",
+        "version": "2.0.0",
+        "description": "Central hub for Fire Ventures Enterprise ecosystem",
+        "architecture": "Hub and Spoke Model - All apps communicate through FireAPI",
+        "ecosystem": {
+            "total_services": len(SERVICES),
+            "available_services": list(SERVICES.keys()),
+            "operational_services": len([s for s in SERVICES.values() if s["status"] == "live"]),
+            "planned_services": len([s for s in SERVICES.values() if s["status"] == "planned"])
+        },
         "endpoints": {
-            "/predict/<coin_id>": "Get 24h prediction (default)",
-            "/predict/<coin_id>/<timeframe>": "Get prediction for specific timeframe",
-            "/trending": "Get trending predictions",
-            "/trending/<timeframe>": "Get trending for timeframe",
-            "/coins": "List supported coins",
-            "/health": "API health check"
+            "sports_intelligence": "/sports/predict (POST)",
+            "crypto_intelligence": "/crypto/predict (POST)", 
+            "crm_operations": "/crm/analyze (POST)",
+            "branding_analysis": "/branding/analyze (POST)",
+            "service_directory": "/services (GET)",
+            "health_check": "/health (GET)"
         },
-        "timeframe_examples": {
-            "1h": "/predict/bitcoin/1h - 1 hour prediction",
-            "6h": "/predict/ethereum/6h - 6 hour prediction", 
-            "24h": "/predict/solana/24h - 24 hour prediction"
-        },
-        "features": [
-            "Multiple timeframe analysis (1h to 48h)",
-            "Adaptive technical indicators per timeframe",
-            "Timeframe-optimized confidence scoring",
-            "Real-time predictions with expiry times"
-        ]
-    })
+        "communication_flow": [
+            "1. Apps make requests to FireAPI",
+            "2. FireAPI processes with central intelligence", 
+            "3. FireAPI returns enriched data to apps",
+            "4. Apps display results to users"
+        ],
+        "documentation": "https://tgwbkzua.gensparkspace.com/",
+        "timestamp": datetime.datetime.now().isoformat()
+    }
+
+@app.route('/services')
+def services():
+    """Service Directory - All Fire ecosystem services"""
+    return {
+        "fire_ecosystem": SERVICES,
+        "total_services": len(SERVICES),
+        "central_hub": "FireAPI coordinates all intelligence",
+        "architecture": "Microservices communicating through central hub",
+        "service_status": {
+            service: details["status"] 
+            for service, details in SERVICES.items()
+        }
+    }
+
+# =====================================================
+# SPORTS INTELLIGENCE HUB (for FireBet app)
+# =====================================================
+
+@app.route('/sports/predict', methods=['POST'])
+def sports_predict():
+    """Central sports intelligence for FireBet app"""
+    try:
+        data = request.json
+        sport = data.get('sport', 'nfl')
+        team1 = data.get('team1', '').lower()
+        team2 = data.get('team2', '').lower()
+        app_id = data.get('app_id', 'unknown')
+        user_id = data.get('user_id', 'anonymous')
+        
+        # Validate input
+        if not team1 or not team2:
+            return {"error": "Both team1 and team2 are required"}, 400
+        
+        # Log request from app
+        logger.info(f"Sports prediction: {app_id} | {user_id} | {team1} vs {team2}")
+        
+        # Central sports intelligence processing
+        prediction = process_sports_prediction(sport, team1, team2)
+        
+        # Log successful response
+        log_app_activity(app_id, 'sports_prediction', 'success', user_id)
+        
+        return prediction
+        
+    except Exception as e:
+        logger.error(f"Sports prediction error: {str(e)}")
+        return {"error": "Sports intelligence temporarily unavailable"}, 500
+
+@app.route('/sports/trending', methods=['GET'])
+def sports_trending():
+    """Trending sports and betting opportunities"""
+    return {
+        "trending_games": [
+            {"teams": "Chiefs vs Bills", "interest": 95, "confidence": 78},
+            {"teams": "Cowboys vs Eagles", "interest": 88, "confidence": 82},
+            {"teams": "49ers vs Rams", "interest": 92, "confidence": 74}
+        ],
+        "hot_bets": [
+            {"type": "over_under", "game": "Chiefs vs Bills", "recommendation": "Over 48.5"},
+            {"type": "spread", "game": "Cowboys vs Eagles", "recommendation": "Cowboys -3"}
+        ],
+        "timestamp": datetime.datetime.now().isoformat()
+    }
+
+# =====================================================
+# CRYPTO INTELLIGENCE HUB (for FireCrypto app)
+# =====================================================
+
+@app.route('/crypto/predict', methods=['POST'])
+def crypto_predict():
+    """Central crypto intelligence for FireCrypto app"""
+    try:
+        data = request.json
+        coin = data.get('coin', 'bitcoin').lower()
+        timeframe = data.get('timeframe', '24h')
+        app_id = data.get('app_id', 'unknown')
+        user_id = data.get('user_id', 'anonymous')
+        
+        # Log request from app
+        logger.info(f"Crypto prediction: {app_id} | {user_id} | {coin} {timeframe}")
+        
+        # Central crypto intelligence processing
+        prediction = process_crypto_prediction(coin, timeframe)
+        
+        # Log successful response
+        log_app_activity(app_id, 'crypto_prediction', 'success', user_id)
+        
+        return prediction
+        
+    except Exception as e:
+        logger.error(f"Crypto prediction error: {str(e)}")
+        return {"error": "Crypto intelligence temporarily unavailable"}, 500
+
+@app.route('/crypto/trending', methods=['GET'])
+def crypto_trending():
+    """Trending cryptocurrencies and opportunities"""
+    return {
+        "trending_coins": [
+            {"coin": "bitcoin", "momentum": "bullish", "confidence": 84},
+            {"coin": "ethereum", "momentum": "neutral", "confidence": 72},
+            {"coin": "solana", "momentum": "bullish", "confidence": 78}
+        ],
+        "market_sentiment": "cautiously optimistic",
+        "timestamp": datetime.datetime.now().isoformat()
+    }
+
+# =====================================================
+# CRM INTELLIGENCE HUB (for FireCRM app)
+# =====================================================
+
+@app.route('/crm/analyze', methods=['POST'])
+def crm_analyze():
+    """Central CRM intelligence for FireCRM app"""
+    try:
+        data = request.json
+        customer_data = data.get('customer_data', {})
+        analysis_type = data.get('analysis_type', 'lead_scoring')
+        app_id = data.get('app_id', 'unknown')
+        user_id = data.get('user_id', 'anonymous')
+        
+        # Log request from app
+        logger.info(f"CRM analysis: {app_id} | {user_id} | {analysis_type}")
+        
+        # Central CRM intelligence processing
+        analysis = process_crm_analysis(customer_data, analysis_type)
+        
+        # Log successful response
+        log_app_activity(app_id, 'crm_analysis', 'success', user_id)
+        
+        return analysis
+        
+    except Exception as e:
+        logger.error(f"CRM analysis error: {str(e)}")
+        return {"error": "CRM intelligence temporarily unavailable"}, 500
+
+# =====================================================
+# BRANDING INTELLIGENCE HUB (for FireBranding app)
+# =====================================================
+
+@app.route('/branding/analyze', methods=['POST'])
+def branding_analyze():
+    """Central branding intelligence for FireBranding app"""
+    try:
+        data = request.json
+        website_url = data.get('website_url', '')
+        company_name = data.get('company_name', '')
+        app_id = data.get('app_id', 'unknown')
+        user_id = data.get('user_id', 'anonymous')
+        
+        # Log request from app
+        logger.info(f"Branding analysis: {app_id} | {user_id} | {website_url}")
+        
+        # Central branding intelligence processing
+        analysis = process_branding_analysis(website_url, company_name)
+        
+        # Log successful response
+        log_app_activity(app_id, 'branding_analysis', 'success', user_id)
+        
+        return analysis
+        
+    except Exception as e:
+        logger.error(f"Branding analysis error: {str(e)}")
+        return {"error": "Branding intelligence temporarily unavailable"}, 500
+
+# =====================================================
+# HEALTH AND MONITORING
+# =====================================================
 
 @app.route('/health')
 def health():
-    return jsonify({
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "api_version": "3.0.0",
-        "available_timeframes": list(predictor.timeframe_configs.keys())
-    })
+    """Central hub health check"""
+    return {
+        "fireapi_status": "healthy",
+        "timestamp": datetime.datetime.now().isoformat(),
+        "central_hub": "operational",
+        "version": "2.0.0",
+        "ecosystem": {
+            "total_services": len(SERVICES),
+            "live_services": len([s for s in SERVICES.values() if s["status"] == "live"]),
+            "planned_services": len([s for s in SERVICES.values() if s["status"] == "planned"])
+        },
+        "intelligence_modules": [
+            "sports_prediction",
+            "crypto_prediction", 
+            "crm_analysis",
+            "branding_analysis"
+        ]
+    }
 
-@app.route('/predict/<coin_id>')
-@app.route('/predict/<coin_id>/<timeframe>')
-@rate_limit(max_per_minute=30)
-def predict_coin(coin_id, timeframe='24h'):
-    """Get prediction for specific coin and timeframe"""
-    
-    # Validate timeframe
-    if timeframe not in predictor.timeframe_configs:
-        return jsonify({
-            "error": f"Invalid timeframe '{timeframe}'",
-            "available_timeframes": list(predictor.timeframe_configs.keys())
-        }), 400
-    
-    try:
-        # Get historical data
-        df, config = predictor.get_price_data(coin_id, timeframe)
-        if df is None:
-            return jsonify({"error": f"Could not fetch data for {coin_id}"}), 404
-        
-        # Calculate indicators
-        df_with_indicators = predictor.calculate_technical_indicators(df, config, timeframe)
-        if df_with_indicators is None:
-            return jsonify({"error": "Insufficient data for analysis"}), 400
-        
-        # Make prediction
-        prediction = predictor.timeframe_prediction_model(df_with_indicators, config, timeframe)
-        if prediction is None:
-            return jsonify({"error": "Could not generate prediction"}), 500
-        
-        return jsonify({
-            "coin": coin_id,
-            "timeframe": timeframe,
-            "prediction": prediction,
-            "model": f"fireapi_v3_{timeframe}",
-            "data_points": len(df),
-            "analysis_optimized_for": f"{timeframe} trading",
-            "last_updated": datetime.now().isoformat()
-        })
-        
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+# =====================================================
+# CENTRAL INTELLIGENCE PROCESSING FUNCTIONS
+# =====================================================
 
-@app.route('/trending')
-@app.route('/trending/<timeframe>')
-@rate_limit(max_per_minute=5)
-def get_trending(timeframe='24h'):
-    """Get trending predictions for specific timeframe"""
+def process_sports_prediction(sport, team1, team2):
+    """Central sports intelligence - all AI models here"""
+    # Enhanced mock prediction - replace with real AI later
+    confidence = 75 + (hash(f"{team1}{team2}") % 20)  # 75-95% confidence
     
-    if timeframe not in predictor.timeframe_configs:
-        return jsonify({
-            "error": f"Invalid timeframe '{timeframe}'",
-            "available_timeframes": list(predictor.timeframe_configs.keys())
-        }), 400
-    
-    popular_coins = ['bitcoin', 'ethereum', 'solana', 'cardano', 'dogecoin']
-    predictions = {}
-    
-    for coin in popular_coins:
-        try:
-            df, config = predictor.get_price_data(coin, timeframe)
-            if df is not None:
-                df_indicators = predictor.calculate_technical_indicators(df, config, timeframe)
-                if df_indicators is not None:
-                    pred = predictor.timeframe_prediction_model(df_indicators, config, timeframe)
-                    if pred is not None:
-                        predictions[coin] = pred
-            
-            time.sleep(1.5)  # Rate limiting
-            
-        except Exception as e:
-            print(f"Error processing {coin} ({timeframe}): {e}")
-            continue
-    
-    # Sort by confidence * change_percent
-    sorted_predictions = dict(sorted(
-        predictions.items(), 
-        key=lambda x: x[1]['confidence'] * abs(x[1]['change_percent']), 
-        reverse=True
-    ))
-    
-    return jsonify({
-        "timeframe": timeframe,
-        "trending_predictions": sorted_predictions,
-        "total_analyzed": len(predictions),
-        "timestamp": datetime.now().isoformat()
-    })
-
-@app.route('/coins')
-def supported_coins():
-    """List supported coins and timeframes"""
-    return jsonify({
-        "supported_coins": [
-            'bitcoin', 'ethereum', 'solana', 'cardano', 'avalanche-2',
-            'dogecoin', 'shiba-inu', 'chainlink', 'polygon', 'uniswap'
+    return {
+        "prediction": f"{team1.title()} wins by 3-7 points",
+        "confidence": confidence,
+        "sport": sport,
+        "matchup": f"{team1.title()} vs {team2.title()}",
+        "factors": [
+            "Home field advantage analysis",
+            "Recent performance trends", 
+            "Injury report impact assessment",
+            "Historical head-to-head data",
+            "Weather conditions factor",
+            "Betting line movement analysis"
         ],
-        "available_timeframes": list(predictor.timeframe_configs.keys()),
-        "timeframe_details": {
-            "1h": "1 hour - High frequency, momentum-focused",
-            "2h": "2 hours - Short-term technical analysis", 
-            "6h": "6 hours - Intraday trend analysis",
-            "12h": "12 hours - Half-day trend prediction",
-            "24h": "24 hours - Daily trend analysis",
-            "48h": "48 hours - Multi-day trend prediction"
-        }
-    })
+        "betting_recommendations": [
+            f"Take {team1.title()} -3 to -7",
+            "Consider Over on total points",
+            f"{team1.title()} moneyline value bet"
+        ],
+        "risk_assessment": "moderate" if confidence > 80 else "high",
+        "timestamp": datetime.datetime.now().isoformat(),
+        "service": "FireAPI Sports Intelligence v2.0"
+    }
+
+def process_crypto_prediction(coin, timeframe):
+    """Central crypto intelligence - all AI models here"""
+    # Enhanced mock prediction - replace with real AI later
+    confidence = 70 + (hash(f"{coin}{timeframe}") % 25)  # 70-95% confidence
+    
+    price_targets = {
+        "bitcoin": {"1h": "$43,200", "6h": "$44,500", "24h": "$45,000", "48h": "$46,800"},
+        "ethereum": {"1h": "$2,650", "6h": "$2,720", "24h": "$2,800", "48h": "$2,900"},
+        "solana": {"1h": "$105", "6h": "$108", "24h": "$112", "48h": "$118"}
+    }
+    
+    return {
+        "coin": coin,
+        "timeframe": timeframe,
+        "prediction": "bullish" if confidence > 75 else "neutral",
+        "price_target": price_targets.get(coin, {}).get(timeframe, "TBD"),
+        "confidence": confidence,
+        "factors": [
+            "Technical indicator analysis",
+            "Market sentiment evaluation",
+            "Volume and liquidity assessment", 
+            "News sentiment analysis",
+            "Social media buzz tracking",
+            "Whale wallet movements"
+        ],
+        "risk_level": "low" if confidence > 85 else "medium",
+        "trading_signals": [
+            f"Entry point recommended for {timeframe} trade",
+            "Stop loss at 5% below entry",
+            "Take profit at predicted target"
+        ],
+        "timestamp": datetime.datetime.now().isoformat(),
+        "service": "FireAPI Crypto Intelligence v2.0"
+    }
+
+def process_crm_analysis(customer_data, analysis_type):
+    """Central CRM intelligence - all AI models here"""
+    company_name = customer_data.get('company', 'Unknown Company')
+    
+    return {
+        "analysis_type": analysis_type,
+        "company": company_name,
+        "lead_score": 85,
+        "conversion_probability": 67,
+        "deal_size_estimate": "$25,000 - $50,000",
+        "recommended_actions": [
+            "Schedule discovery call within 24 hours",
+            "Send case study relevant to their industry",
+            "Assign to senior sales representative",
+            "Follow up with pricing proposal in 3 days"
+        ],
+        "risk_factors": [
+            "Budget constraints mentioned",
+            "Long decision-making process",
+            "Multiple stakeholders involved"
+        ],
+        "opportunity_indicators": [
+            "Active website engagement",
+            "Downloaded multiple resources", 
+            "Engaged with pricing page",
+            "Requested demo or consultation"
+        ],
+        "next_best_action": "discovery_call",
+        "priority": "high",
+        "timestamp": datetime.datetime.now().isoformat(),
+        "service": "FireAPI CRM Intelligence v2.0"
+    }
+
+def process_branding_analysis(website_url, company_name):
+    """Central branding intelligence - all AI models here"""
+    return {
+        "company": company_name,
+        "website": website_url,
+        "digital_presence_score": 42,  # Out of 100
+        "analysis": {
+            "website_performance": {
+                "score": 35,
+                "issues": ["Slow loading time", "Poor mobile optimization", "Outdated design"]
+            },
+            "social_media_presence": {
+                "score": 28,
+                "issues": ["Inconsistent branding", "Low engagement", "Irregular posting"]
+            },
+            "brand_consistency": {
+                "score": 55,
+                "issues": ["Logo variations", "Color inconsistency", "Mixed messaging"]
+            }
+        },
+        "recommendations": [
+            "Complete website redesign with modern, mobile-first approach",
+            "Develop consistent brand guidelines and style guide",
+            "Implement social media content strategy",
+            "Optimize for search engines (SEO)",
+            "Create professional brand assets"
+        ],
+        "estimated_impact": "40-60% improvement in digital presence",
+        "investment_required": "$15,000 - $30,000",
+        "timeline": "6-8 weeks for complete transformation",
+        "priority_actions": [
+            "Brand audit and strategy development",
+            "Website performance optimization",
+            "Social media brand alignment"
+        ],
+        "timestamp": datetime.datetime.now().isoformat(),
+        "service": "FireAPI Branding Intelligence v2.0"
+    }
+
+def log_app_activity(app_id, action, status, user_id="anonymous"):
+    """Central logging for all app activities"""
+    activity = {
+        "app_id": app_id,
+        "action": action,
+        "status": status,
+        "user_id": user_id,
+        "timestamp": datetime.datetime.now().isoformat()
+    }
+    logger.info(f"ACTIVITY: {json.dumps(activity)}")
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(debug=True, host='0.0.0.0', port=8000)

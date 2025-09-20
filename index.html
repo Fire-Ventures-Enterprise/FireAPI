@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FireBuildAI - Intelligent Workflow Sequencing for Contractors. See exactly how much time and money AI-powered project sequencing can save your contracting business.">
+    <meta name="keywords" content="AI workflow sequencing, contractor management, construction automation, project sequencing, AI contractor software">
+    <meta name="author" content="FireBuildAI">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://firebuildai.com/">
+    <meta property="og:title" content="FireBuildAI - AI-Powered Workflow Sequencing for Contractors">
+    <meta property="og:description" content="See exactly how much time and money AI-powered project sequencing can save your contracting business">
+    <meta property="og:image" content="/images/firebuild-og-image.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://firebuildai.com/">
+    <meta property="twitter:title" content="FireBuildAI - AI-Powered Workflow Sequencing for Contractors">
+    <meta property="twitter:description" content="See exactly how much time and money AI-powered project sequencing can save your contracting business">
+    <meta property="twitter:image" content="/images/firebuild-twitter-image.jpg">
+
+    <title>FireBuildAI - AI Workflow Sequencing for Contractors | Interactive Demo</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="font-sans antialiased">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-primary-900">
+                            <i class="fas fa-brain text-primary-600 mr-2"></i>
+                            FireBuildAI
+                        </h1>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#estimates" class="text-gray-900 hover:text-primary-600 px-3 py-2 text-sm font-medium">Smart Estimates</a>
+                        <a href="#demo" class="text-gray-900 hover:text-primary-600 px-3 py-2 text-sm font-medium">AI Demo</a>
+                        <a href="#features" class="text-gray-900 hover:text-primary-600 px-3 py-2 text-sm font-medium">Features</a>
+                        <a href="#pricing" class="text-gray-900 hover:text-primary-600 px-3 py-2 text-sm font-medium">Pricing</a>
+                    </div>
+                </div>
+
+                <!-- CTA Button -->
+                <div class="flex items-center space-x-4">
+                    <button class="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors" onclick="openTrialModal()">
+                        Start Free Trial
+                    </button>
+                    <button class="md:hidden text-gray-500" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="#estimates" class="block px-3 py-2 text-base font-medium text-gray-900 hover:text-primary-600">Smart Estimates</a>
+                <a href="#demo" class="block px-3 py-2 text-base font-medium text-gray-900 hover:text-primary-600">AI Demo</a>
+                <a href="#features" class="block px-3 py-2 text-base font-medium text-gray-900 hover:text-primary-600">Features</a>
+                <a href="#pricing" class="block px-3 py-2 text-base font-medium text-gray-900 hover:text-primary-600">Pricing</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section - AI Workflow Sequencing Focus -->
+    <section class="bg-gradient-to-br from-primary-50 to-white pt-16 pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Hero Content -->
+                <div>
+                    <div class="mb-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+                            <i class="fas fa-sparkles mr-2"></i>
+                            AI-Powered Workflow Intelligence
+                        </span>
+                    </div>
+                    
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+                        <span class="text-primary-600">AI-Powered</span> Estimates
+                        & Workflow Sequencing
+                    </h1>
+                    
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                        See exactly how much <strong>time and money</strong> FireBuild.AI saves your contracting business. From LiDAR-powered estimates to intelligent workflow sequencing - our AI optimizes every step of your projects.
+                    </p>
+
+                    <!-- Key Benefits -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                        <div class="bg-white rounded-lg p-4 shadow-sm border">
+                            <div class="text-2xl font-bold text-primary-600 mb-1">5 min</div>
+                            <div class="text-sm text-gray-600">Create Accurate Estimates</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm border">
+                            <div class="text-2xl font-bold text-green-600 mb-1">67%</div>
+                            <div class="text-sm text-gray-600">Faster Workflow Sequencing</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm border">
+                            <div class="text-2xl font-bold text-purple-600 mb-1">LiDAR</div>
+                            <div class="text-sm text-gray-600">Precision Scanning</div>
+                        </div>
+                    </div>
+
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button class="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center" onclick="scrollToDemo()">
+                            <i class="fas fa-play mr-2"></i>
+                            Watch AI Demo
+                        </button>
+                        <button class="border-2 border-primary-600 text-primary-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-50 transition-colors flex items-center justify-center" onclick="scrollToEstimates()">
+                            <i class="fas fa-calculator mr-2"></i>
+                            Try Smart Estimates
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hero Demo Preview -->
+                <div class="lg:pl-8">
+                    <div class="bg-white rounded-xl shadow-2xl overflow-hidden">
+                        <!-- Demo Header -->
+                        <div class="bg-gray-50 px-6 py-4 border-b">
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-semibold text-gray-900">AI Workflow Sequencer</h3>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <div class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                                    Live AI Processing
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Sequencing Demo -->
+                        <div id="hero-sequencing-demo" class="p-6">
+                            <div class="space-y-4">
+                                <!-- Project Input -->
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="text-sm font-medium text-gray-700 mb-2">Project: Kitchen Remodel - Oak Valley</div>
+                                    <div class="text-xs text-gray-500">AI analyzing optimal sequence...</div>
+                                </div>
+                                
+                                <!-- AI Generated Sequence -->
+                                <div id="sequence-steps" class="space-y-3">
+                                    <!-- Steps will be populated by JavaScript -->
+                                </div>
+                                
+                                <!-- AI Insights -->
+                                <div class="bg-primary-50 rounded-lg p-4 mt-4">
+                                    <div class="flex items-start space-x-2">
+                                        <i class="fas fa-lightbulb text-primary-600 mt-1"></i>
+                                        <div>
+                                            <div class="font-medium text-primary-900 text-sm">AI Optimization</div>
+                                            <div class="text-xs text-primary-700 mt-1">Saved 8 days by resequencing electrical before drywall</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Smart Estimates Section -->
+    <section id="estimates" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    AI-Powered Estimates in 5 Minutes
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    From project description to detailed estimate with automated workflow sequencing. 
+                    FireBuild.AI combines LiDAR precision with intelligent cost analysis.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12 items-start">
+                <!-- Estimate Generator -->
+                <div class="bg-gray-50 rounded-xl p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Generate Smart Estimate</h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Project Type -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Project Type
+                            </label>
+                            <select id="estimateProjectType" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" onchange="updateEstimate()">
+                                <option value="basement-retrofit">Basement Retrofit</option>
+                                <option value="kitchen-remodel">Kitchen Remodel</option>
+                                <option value="bathroom-renovation">Bathroom Renovation</option>
+                                <option value="home-addition">Home Addition</option>
+                                <option value="deck-construction">Deck Construction</option>
+                            </select>
+                        </div>
+
+                        <!-- Square Footage -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Square Footage
+                            </label>
+                            <input type="number" id="estimateSquareFootage" value="1320" min="100" max="10000" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                   onchange="updateEstimate()">
+                        </div>
+
+                        <!-- Finish Level -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Finish Level
+                            </label>
+                            <select id="estimateFinishLevel" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" onchange="updateEstimate()">
+                                <option value="basic">Basic Finishes</option>
+                                <option value="standard" selected>Standard Finishes</option>
+                                <option value="premium">Premium Finishes</option>
+                                <option value="luxury">Luxury Finishes</option>
+                            </select>
+                        </div>
+
+                        <!-- Location Factor -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Location
+                            </label>
+                            <select id="estimateLocation" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" onchange="updateEstimate()">
+                                <option value="rural">Rural Area (0.8x)</option>
+                                <option value="suburban" selected>Suburban (1.0x)</option>
+                                <option value="urban">Urban (1.2x)</option>
+                                <option value="metro">Metro Area (1.4x)</option>
+                            </select>
+                        </div>
+
+                        <!-- Generate Estimate Button -->
+                        <button class="w-full bg-primary-600 text-white py-4 px-6 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors" onclick="generateMainPageEstimate()">
+                            <i class="fas fa-calculator mr-2"></i>
+                            Generate AI Estimate & Sequence
+                        </button>
+
+                        <!-- LiDAR Scanning Option -->
+                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-cube text-blue-600 mr-2"></i>
+                                <span class="font-semibold text-blue-900">LiDAR Precision Scanning</span>
+                            </div>
+                            <p class="text-sm text-blue-800 mb-3">
+                                For maximum accuracy, use LiDAR scanning to capture exact dimensions and generate precise estimates automatically.
+                            </p>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-camera mr-1"></i>
+                                Start LiDAR Scan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estimate Results -->
+                <div class="space-y-6">
+                    <!-- Cost Breakdown -->
+                    <div class="bg-white rounded-xl p-8 border-2 border-gray-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-file-invoice-dollar text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-900">Project Estimate</h4>
+                                <p class="text-gray-600">AI-generated cost breakdown</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                <span class="text-gray-700">Materials</span>
+                                <span id="estimateMaterials" class="font-semibold text-gray-900">$18,200</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                <span class="text-gray-700">Labor</span>
+                                <span id="estimateLabor" class="font-semibold text-gray-900">$24,800</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                <span class="text-gray-700">Permits & Fees</span>
+                                <span id="estimatePermits" class="font-semibold text-gray-900">$1,200</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                <span class="text-gray-700">Overhead & Profit (18%)</span>
+                                <span id="estimateOverhead" class="font-semibold text-gray-900">$7,956</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-4 border-t-2 border-gray-200">
+                                <span class="text-lg font-bold text-gray-900">Total Project Cost</span>
+                                <span id="estimateTotal" class="text-2xl font-bold text-green-600">$52,156</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-gray-200">
+                            <div class="text-sm text-gray-600">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Estimate based on current material costs and local labor rates
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline & Workflow -->
+                    <div class="bg-primary-50 rounded-xl p-8 border-2 border-primary-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-clock text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-900">AI-Optimized Timeline</h4>
+                                <p class="text-gray-600">Intelligent workflow sequencing</p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <div id="estimateTimeline" class="text-2xl font-bold text-primary-600">45 days</div>
+                                <div class="text-sm text-gray-600">Total Duration</div>
+                            </div>
+                            <div>
+                                <div id="estimateTimeSaved" class="text-2xl font-bold text-green-600">12 days</div>
+                                <div class="text-sm text-gray-600">Time Saved</div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-700">Planning & Permits</span>
+                                <span class="text-gray-600">7 days</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-700">Rough-in Work</span>
+                                <span class="text-gray-600">8 days (parallel)</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-700">Framing & Systems</span>
+                                <span class="text-gray-600">15 days</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-700">Finishes & Final</span>
+                                <span class="text-gray-600">15 days</span>
+                            </div>
+                        </div>
+
+                        <button class="w-full mt-6 bg-white text-primary-600 border-2 border-primary-600 py-3 px-4 rounded-lg font-semibold hover:bg-primary-50 transition-colors" onclick="showDetailedWorkflow()">
+                            <i class="fas fa-project-diagram mr-2"></i>
+                            View Detailed Workflow
+                        </button>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                        <button class="w-full bg-green-600 text-white py-4 px-6 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors" onclick="openTrialModal()">
+                            <i class="fas fa-file-contract mr-2"></i>
+                            Convert to Professional Estimate
+                        </button>
+                        <button class="w-full border-2 border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-download mr-2"></i>
+                            Download PDF Estimate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Interactive AI Demo Section -->
+    <section id="demo" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    See AI Workflow Sequencing in Action
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Watch how FireBuildAI's intelligent sequencing optimizes your projects automatically, 
+                    identifying dependencies and optimizing workflows in real-time
+                </p>
+            </div>
+
+            <!-- Demo Interface -->
+            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                <!-- Demo Header -->
+                <div class="bg-gray-900 px-6 py-4 flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex space-x-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        </div>
+                        <span class="text-white font-medium">FireBuildAI Workflow Sequencer</span>
+                    </div>
+                    <div class="flex items-center text-green-400 text-sm">
+                        <div class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                        AI Processing Active
+                    </div>
+                </div>
+
+                <!-- Demo Content -->
+                <div class="p-8">
+                    <!-- AI Project Input -->
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-gray-900">AI Project Analyzer</h3>
+                            <div class="flex items-center space-x-2">
+                                <button class="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary-700 transition-colors" onclick="analyzeProject();">
+                                    <i class="fas fa-brain mr-2"></i>
+                                    Analyze Project
+                                </button>
+                                <button class="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-700 transition-colors" onclick="loadSampleProject()">
+                                    <i class="fas fa-clipboard mr-2"></i>
+                                    Load Sample
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Project Description Input -->
+                        <div class="bg-white rounded-lg border-2 border-gray-200 p-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                Describe Your Construction Project
+                            </label>
+                            <textarea id="projectDescription" 
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                      rows="6"
+                                      placeholder="Enter detailed project description including scope, materials, square footage, current state, and any specific requirements..."></textarea>
+                            
+                            <div class="mt-4 flex items-center justify-between">
+                                <div class="text-sm text-gray-500">
+                                    <i class="fas fa-lightbulb mr-1"></i>
+                                    Be specific about materials, dimensions, and current construction stage
+                                </div>
+                                <div class="text-sm text-gray-400" id="charCount">0 characters</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Conversation Panel -->
+                    <div id="aiConversation" class="mb-8 hidden">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">AI Project Analysis</h3>
+                        <div class="bg-white rounded-lg border border-gray-200 max-h-96 overflow-y-auto">
+                            <div id="conversationMessages" class="p-6 space-y-4">
+                                <!-- AI conversation will appear here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Response Buttons -->
+                        <div id="quickResponses" class="mt-4 flex flex-wrap gap-2 hidden">
+                            <!-- Quick response buttons will appear here -->
+                        </div>
+                        
+                        <!-- Text Input for Responses -->
+                        <div id="responseInput" class="mt-4 hidden">
+                            <div class="flex space-x-2">
+                                <input type="text" id="userResponse" 
+                                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                       placeholder="Type your response..."
+                                       onkeypress="if(event.key==='Enter') submitResponse()">
+                                <button class="bg-primary-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-700" onclick="submitResponse()">
+                                    Send
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generated Workflow Canvas -->
+                    <div id="workflowSection" class="mb-8 hidden">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-gray-900">AI-Generated Construction Sequence</h3>
+                            <div class="flex items-center text-green-600 text-sm">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                Analysis Complete
+                            </div>
+                        </div>
+
+                        <!-- Visual Workflow Display -->
+                        <div id="workflowCanvas" class="bg-gray-50 rounded-lg p-6 min-h-[400px] relative overflow-auto">
+                            <div id="workflowNodes" class="relative">
+                                <!-- Workflow will be generated here -->
+                            </div>
+                        </div>
+
+                        <!-- Regional Pricing Controls -->
+                        <div id="regionalPricingControls" class="bg-blue-50 p-4 rounded-lg border-2 border-blue-200 mt-4 hidden">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <i class="fas fa-map-marker-alt text-blue-600 mr-2"></i>
+                                    <span class="font-semibold text-blue-900">Regional Pricing Intelligence</span>
+                                </div>
+                                <div class="text-xs text-blue-600 font-medium">Powered by National Construction Data</div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-blue-700 mb-2">Location</label>
+                                    <select id="locationSelect" class="w-full border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updateRegionalPricing()">
+                                        <option value="">Select Location...</option>
+                                        <optgroup label="🇺🇸 United States">
+                                            <option value="CA-SF">California - San Francisco Bay Area</option>
+                                            <option value="CA-LA">California - Los Angeles</option>
+                                            <option value="CA-SD">California - San Diego</option>
+                                            <option value="NY-NYC">New York - New York City</option>
+                                            <option value="NY-UPS">New York - Upstate</option>
+                                            <option value="TX-DFW">Texas - Dallas-Fort Worth</option>
+                                            <option value="TX-HOU">Texas - Houston</option>
+                                            <option value="TX-AUS">Texas - Austin</option>
+                                            <option value="FL-MIA">Florida - Miami-Dade</option>
+                                            <option value="FL-ORL">Florida - Orlando</option>
+                                            <option value="FL-TB">Florida - Tampa Bay</option>
+                                            <option value="WA-SEA">Washington - Seattle</option>
+                                            <option value="OR-POR">Oregon - Portland</option>
+                                            <option value="CO-DEN">Colorado - Denver</option>
+                                            <option value="AZ-PHX">Arizona - Phoenix</option>
+                                            <option value="IL-CHI">Illinois - Chicago</option>
+                                            <option value="MA-BOS">Massachusetts - Boston</option>
+                                            <option value="PA-PHI">Pennsylvania - Philadelphia</option>
+                                            <option value="GA-ATL">Georgia - Atlanta</option>
+                                            <option value="NC-CHA">North Carolina - Charlotte</option>
+                                            <option value="TN-NAS">Tennessee - Nashville</option>
+                                            <option value="OH-CLE">Ohio - Cleveland</option>
+                                            <option value="MI-DET">Michigan - Detroit</option>
+                                            <option value="MN-MIN">Minnesota - Minneapolis</option>
+                                            <option value="US-NAT">United States - National Average</option>
+                                        </optgroup>
+                                        <optgroup label="🇨🇦 Canada">
+                                            <option value="ON-TOR">Ontario - Toronto</option>
+                                            <option value="ON-OTT">Ontario - Ottawa</option>
+                                            <option value="ON-HAM">Ontario - Hamilton</option>
+                                            <option value="BC-VAN">British Columbia - Vancouver</option>
+                                            <option value="BC-VIC">British Columbia - Victoria</option>
+                                            <option value="AB-CAL">Alberta - Calgary</option>
+                                            <option value="AB-EDM">Alberta - Edmonton</option>
+                                            <option value="QC-MON">Quebec - Montreal</option>
+                                            <option value="QC-QUE">Quebec - Quebec City</option>
+                                            <option value="NS-HAL">Nova Scotia - Halifax</option>
+                                            <option value="MB-WIN">Manitoba - Winnipeg</option>
+                                            <option value="CA-NAT">Canada - National Average</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-blue-700 mb-2">Cost Adjustment</label>
+                                    <div class="flex items-center space-x-2">
+                                        <span id="costMultiplier" class="text-lg font-bold text-blue-900">1.00x</span>
+                                        <span class="text-sm text-blue-600">vs National Avg</span>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-blue-700 mb-2">Market Factors</label>
+                                    <div id="marketFactors" class="text-xs text-blue-600">
+                                        Select location for market data
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Workflow Action Buttons -->
+                        <div class="flex gap-4 mt-4">
+                            <button id="createEstimateBtn" class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors hidden" onclick="generateDetailedEstimate();">
+                                <i class="fas fa-calculator mr-2"></i>Create Detailed Estimate
+                            </button>
+                            <button id="exportWorkflowBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors hidden" onclick="exportWorkflow()">
+                                <i class="fas fa-download mr-2"></i>Export Workflow
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Task Detail Modal -->
+                    <div id="taskDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+                        <div class="flex items-center justify-center min-h-screen p-4">
+                            <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                                <div class="p-6">
+                                    <!-- Modal Header -->
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h3 class="text-xl font-bold text-gray-900" id="modalTaskTitle">Task Details</h3>
+                                        <button onclick="closeTaskModal()" class="text-gray-500 hover:text-gray-700">
+                                            <i class="fas fa-times text-xl"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Modal Content -->
+                                    <div class="space-y-6">
+                                        <!-- Basic Task Info -->
+                                        <div class="grid md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Task Name</label>
+                                                <input type="text" id="modalTaskName" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Duration (days)</label>
+                                                <input type="number" id="modalTaskDuration" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            </div>
+                                        </div>
+
+                                        <!-- Task Description -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Description & Details</label>
+                                            <textarea id="modalTaskDescription" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                                        </div>
+
+                                        <!-- Pricing Section -->
+                                        <div class="border-t pt-6">
+                                            <h4 class="font-semibold text-gray-900 mb-4">💰 Pricing Breakdown</h4>
+                                            <div class="grid md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Labor Cost</label>
+                                                    <div class="relative">
+                                                        <span class="absolute left-3 top-2 text-gray-500">$</span>
+                                                        <input type="number" id="modalLaborCost" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Material Cost</label>
+                                                    <div class="relative">
+                                                        <span class="absolute left-3 top-2 text-gray-500">$</span>
+                                                        <input type="number" id="modalMaterialCost" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Equipment/Tools</label>
+                                                    <div class="relative">
+                                                        <span class="absolute left-3 top-2 text-gray-500">$</span>
+                                                        <input type="number" id="modalEquipmentCost" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Permits/Fees</label>
+                                                    <div class="relative">
+                                                        <span class="absolute left-3 top-2 text-gray-500">$</span>
+                                                        <input type="number" id="modalPermitCost" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Total Cost Display -->
+                                            <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                                                <div class="flex justify-between items-center">
+                                                    <span class="font-semibold text-gray-700">Total Task Cost:</span>
+                                                    <span class="font-bold text-xl text-green-600" id="modalTotalCost">$0.00</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Dependencies -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Dependencies</label>
+                                            <div id="modalDependencies" class="text-sm text-gray-600">
+                                                <!-- Dependencies will be populated here -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="flex gap-3 pt-4">
+                                            <button onclick="saveTaskChanges()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                                                <i class="fas fa-save mr-2"></i>Save Changes
+                                            </button>
+                                            <button onclick="closeTaskModal()" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <!-- Timeline View -->
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">Timeline View</h3>
+                            
+                            <div id="timelineView" class="space-y-3 max-h-96 overflow-y-auto">
+                                <!-- Timeline items will be populated by JavaScript -->
+                                <div class="text-center py-8 text-gray-400">
+                                    <i class="fas fa-timeline text-3xl mb-2"></i>
+                                    <p>Timeline will appear after AI optimization</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Insights & Optimization -->
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">AI Optimization Insights</h3>
+                            
+                            <!-- Real-time AI Analysis -->
+                            <div id="aiInsights" class="bg-primary-50 rounded-lg p-4 border-2 border-primary-200 mb-4">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-brain text-primary-600 mr-2"></i>
+                                    <span class="font-semibold text-primary-900">AI Analysis</span>
+                                </div>
+                                <div id="insightsContent" class="text-sm text-primary-800">
+                                    Ready to analyze project dependencies and optimize workflow sequence
+                                </div>
+                            </div>
+
+                            <!-- Dependency Detection -->
+                            <div id="dependencyPanel" class="bg-blue-50 rounded-lg p-4 border-2 border-blue-200 mb-4">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-sitemap text-blue-600 mr-2"></i>
+                                    <span class="font-semibold text-blue-900">Dependency Detection</span>
+                                </div>
+                                <div id="dependencyContent" class="text-sm text-blue-800">
+                                    AI will identify task dependencies and critical path
+                                </div>
+                            </div>
+
+                            <!-- Optimization Summary -->
+                            <div id="optimizationSummary" class="hidden bg-green-50 rounded-lg p-4 border-2 border-green-200">
+                                <h4 class="font-semibold text-green-900 mb-2">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    Optimization Results
+                                </h4>
+                                <div id="summaryContent" class="text-sm text-green-800">
+                                    <!-- Summary will be populated by JavaScript -->
+                                </div>
+                            </div>
+
+                            <!-- Live Processing Status -->
+                            <div id="processingStatus" class="hidden bg-yellow-50 rounded-lg p-4 border-2 border-yellow-200">
+                                <div class="flex items-center">
+                                    <i class="fas fa-cog fa-spin text-yellow-600 mr-2"></i>
+                                    <span class="font-semibold text-yellow-900">Processing...</span>
+                                </div>
+                                <div class="text-sm text-yellow-800 mt-1">
+                                    AI analyzing <span id="processingStep">project structure</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    AI-Powered Features That Drive Results
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Every feature in FireBuildAI is designed to leverage artificial intelligence 
+                    to optimize your contracting business operations
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-brain text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Intelligent Sequencing</h3>
+                    <p class="text-gray-600 mb-4">AI analyzes project dependencies and optimizes workflow sequences automatically, reducing project duration by up to 30%.</p>
+                    <ul class="text-sm text-gray-500 space-y-1">
+                        <li>• Dependency mapping</li>
+                        <li>• Critical path optimization</li>
+                        <li>• Resource allocation AI</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Predictive Analytics</h3>
+                    <p class="text-gray-600 mb-4">Advanced AI predictions for project timelines, costs, and potential risks before they become problems.</p>
+                    <ul class="text-sm text-gray-500 space-y-1">
+                        <li>• Timeline forecasting</li>
+                        <li>• Cost prediction models</li>
+                        <li>• Risk assessment AI</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-users text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Smart Team Coordination</h3>
+                    <p class="text-gray-600 mb-4">AI-driven team assignments and coordination based on skills, availability, and project requirements.</p>
+                    <ul class="text-sm text-gray-500 space-y-1">
+                        <li>• Skill-based assignments</li>
+                        <li>• Workload optimization</li>
+                        <li>• Real-time coordination</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-file-invoice-dollar text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Automated Invoicing</h3>
+                    <p class="text-gray-600 mb-4">AI-powered invoice generation based on project progress, with smart payment tracking and follow-up automation.</p>
+                    <ul class="text-sm text-gray-500 space-y-1">
+                        <li>• Progress-based billing</li>
+                        <li>• Payment predictions</li>
+                        <li>• Automated follow-ups</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-mobile-alt text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Mobile AI Assistant</h3>
+                    <p class="text-gray-600 mb-4">AI-powered mobile app that provides real-time insights and recommendations while you're on-site.</p>
+                    <ul class="text-sm text-gray-500 space-y-1">
+                        <li>• Voice-activated updates</li>
+                        <li>• Photo progress tracking</li>
+                        <li>• Instant AI insights</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Quality Assurance AI</h3>
+                    <p class="text-gray-600 mb-4">Automated quality checks and compliance monitoring using computer vision and AI analysis.</p>
+                    <ul class="text-sm text-gray-500 space-y-1">
+                        <li>• Automated inspections</li>
+                        <li>• Compliance monitoring</li>
+                        <li>• Quality scoring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Simple, Transparent Pricing
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Choose the plan that fits your business size. All plans include AI workflow sequencing and 24/7 support.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Starter Plan -->
+                <div class="bg-white rounded-xl shadow-lg p-8 relative">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
+                        <div class="text-4xl font-bold text-gray-900 mb-1">$99</div>
+                        <div class="text-gray-600">per month</div>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span class="text-gray-700">Up to 5 projects/month</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span class="text-gray-700">AI workflow sequencing</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span class="text-gray-700">Basic invoicing</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span class="text-gray-700">Mobile app access</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span class="text-gray-700">Email support</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full border-2 border-primary-600 text-primary-600 py-3 px-4 rounded-lg font-semibold hover:bg-primary-50 transition-colors" onclick="openTrialModal()">
+                        Start Free Trial
+                    </button>
+                </div>
+
+                <!-- Professional Plan -->
+                <div class="bg-primary-600 rounded-xl shadow-lg p-8 relative text-white transform scale-105">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <span class="bg-yellow-400 text-yellow-900 px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                    </div>
+                    
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold mb-2">Professional</h3>
+                        <div class="text-4xl font-bold mb-1">$299</div>
+                        <div class="text-primary-200">per month</div>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span>Up to 25 projects/month</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span>Advanced AI analytics</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span>Team collaboration tools</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span>Custom integrations</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span>Priority support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-400 mr-3"></i>
+                            <span>Quality assurance AI</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full bg-white text-primary-600 py-3 px-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors" onclick="openTrialModal()">
+                        Start Free Trial
+                    </button>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="bg-white rounded-xl shadow-lg p-8 relative">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
+                        <div class="text-4xl font-bold text-gray-900 mb-1">$799</div>
+                        <div class="text-gray-600">per month</div>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span class="text-gray-700">Unlimited projects</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span class="text-gray-700">Custom AI models</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span class="text-gray-700">Advanced reporting</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span class="text-gray-700">Multi-location support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span class="text-gray-700">Dedicated support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span class="text-gray-700">White-label options</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full border-2 border-primary-600 text-primary-600 py-3 px-4 rounded-lg font-semibold hover:bg-primary-50 transition-colors" onclick="openTrialModal()">
+                        Contact Sales
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div class="col-span-1">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-brain text-primary-400 text-xl mr-2"></i>
+                        <span class="text-xl font-bold">FireBuildAI</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        Intelligent workflow sequencing for modern contractors. 
+                        Powered by AI, built for results.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Product -->
+                <div>
+                    <h4 class="font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#features" class="hover:text-white">Features</a></li>
+                        <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
+                        <li><a href="#demo" class="hover:text-white">Demo</a></li>
+                        <li><a href="#estimates" class="hover:text-white">Smart Estimates</a></li>
+                    </ul>
+                </div>
+
+                <!-- Resources -->
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white">API Reference</a></li>
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Blog</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company -->
+                <div>
+                    <h4 class="font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">About Us</a></li>
+                        <li><a href="#" class="hover:text-white">Careers</a></li>
+                        <li><a href="#" class="hover:text-white">Contact</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400">
+                    © 2025 FireBuildAI. All rights reserved.
+                </p>
+                <p class="text-gray-400 mt-4 md:mt-0">
+                    Built with AI for the construction industry
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Trial Modal -->
+    <div id="trialModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full p-8">
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Start Your Free Trial</h3>
+                <p class="text-gray-600">No credit card required • 14 days free</p>
+            </div>
+
+            <form id="trialForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                    <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                    <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <input type="tel" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                </div>
+
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" class="flex-1 border border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors" onclick="closeTrialModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 bg-primary-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-primary-700 transition-colors">
+                        Start Trial
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main-fixed.js"></script>
+</body>
+</html>

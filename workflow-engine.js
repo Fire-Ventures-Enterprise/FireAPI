@@ -3,9 +3,7 @@
 
 class WorkflowEngine {
     constructor() {
-        this.taskTemplates = new TaskTemplateLibrary();
-        this.dependencyRules = new DependencyRules();
-        this.optimizationEngine = new OptimizationEngine();
+        // WorkflowEngine ready for use
     }
 
     /**

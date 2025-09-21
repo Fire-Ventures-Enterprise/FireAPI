@@ -1,11 +1,13 @@
 // FireBuildAI Construction Project Analysis API
 // Core engine for parsing construction projects and generating optimized workflows
 
+const CostDatabase = require('./cost-database.js');
+const WorkflowEngine = require('./workflow-engine.js');
+
 class ConstructionProjectAnalyzer {
     constructor() {
         this.costDatabase = new CostDatabase();
         this.workflowEngine = new WorkflowEngine();
-        this.regionalPricing = new RegionalPricingEngine();
     }
 
     /**
@@ -27,10 +29,12 @@ class ConstructionProjectAnalyzer {
             // Step 3: Generate workflow sequence
             const workflow = await this.workflowEngine.generateWorkflow(projectData);
             
-            // Step 4: Apply regional pricing adjustments
-            const regionalAdjustments = await this.regionalPricing.adjustCosts(
-                extractedCosts, 
-                options.location || 'national-average'
+            // Step 4: Apply regional pricing adjustments  
+            const region = options.location || 'US-national-average';
+            const costEstimate = this.costDatabase.getCostEstimate(
+                projectData.projectType || 'general-construction', 
+                projectData.totalSquareFootage || 1000,
+                region
             );
             
             // Step 5: Optimize timeline and dependencies
@@ -39,7 +43,7 @@ class ConstructionProjectAnalyzer {
             // Step 6: Calculate final project metrics
             const projectMetrics = this.calculateProjectMetrics(
                 projectData, 
-                regionalAdjustments, 
+                costEstimate, 
                 optimizedWorkflow
             );
             
@@ -52,7 +56,7 @@ class ConstructionProjectAnalyzer {
                     squareFootage: projectData.squareFootage,
                     complexity: projectData.complexity
                 },
-                costs: regionalAdjustments,
+                costs: costEstimate,
                 workflow: optimizedWorkflow,
                 metrics: projectMetrics,
                 recommendations: this.generateRecommendations(projectData, optimizedWorkflow),

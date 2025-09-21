@@ -12,6 +12,7 @@ require('dotenv').config();
 
 const { FireBuildAPI } = require('./index.js');
 const MicroservicesIntegration = require('./microservices-integration');
+const APIKeyAuth = require('./api-key-auth');
 
 class FireAPIApp {
     constructor() {
@@ -24,6 +25,9 @@ class FireAPIApp {
         
         // Initialize microservices integration
         this.microservices = new MicroservicesIntegration();
+        
+        // Initialize API key authentication
+        this.apiKeyAuth = new APIKeyAuth();
         
         this.setupMiddleware();
         this.setupRoutes();
@@ -101,6 +105,10 @@ class FireAPIApp {
         });
 
         this.app.use('/api/projects/complete-analysis', intensiveLimiter);
+
+        // API Key Authentication (applies to all API endpoints except public ones)
+        console.log('🔐 [APP] Adding API key authentication...');
+        this.app.use(this.apiKeyAuth.authenticate());
 
         // Request logging middleware
         this.app.use((req, res, next) => {
@@ -190,6 +198,84 @@ class FireAPIApp {
                     }
                 });
             }
+        });
+
+        // API Key management endpoints (admin only - no auth required)
+        this.app.get('/admin/api-keys', (req, res) => {
+            try {
+                const keys = this.apiKeyAuth.getFireBuildAIKeys();
+                const usage = this.apiKeyAuth.getUsageStats();
+                
+                res.json({
+                    success: true,
+                    message: 'FireBuild.AI API Keys',
+                    keys: {
+                        production: {
+                            key: keys.production.key,
+                            name: keys.production.name,
+                            permissions: keys.production.permissions,
+                            rateLimit: keys.production.rateLimit,
+                            domains: keys.production.domains
+                        },
+                        development: {
+                            key: keys.development.key,
+                            name: keys.development.name,
+                            permissions: keys.development.permissions,
+                            rateLimit: keys.development.rateLimit,
+                            domains: keys.development.domains
+                        },
+                        demo: {
+                            key: keys.demo.key,
+                            name: keys.demo.name,
+                            permissions: keys.demo.permissions,
+                            rateLimit: keys.demo.rateLimit,
+                            domains: keys.demo.domains
+                        }
+                    },
+                    usage_statistics: usage,
+                    integration_guide: '/admin/integration-guide'
+                });
+            } catch (error) {
+                res.status(500).json({
+                    success: false,
+                    error: {
+                        code: 'API_KEY_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        // Integration guide endpoint
+        this.app.get('/admin/integration-guide', (req, res) => {
+            res.json({
+                success: true,
+                integration: {
+                    authentication: {
+                        method: 'API Key',
+                        header: 'X-API-Key',
+                        alternative_headers: ['API-Key', 'Authorization: Bearer <key>'],
+                        query_parameter: 'api_key'
+                    },
+                    endpoints: {
+                        multi_trade_estimates: 'POST /api/estimates/multi-trade',
+                        carpentry_cabinets: 'POST /api/carpentry/cabinets',
+                        service_health: 'GET /api/microservices/health',
+                        available_trades: 'GET /api/trades/available'
+                    },
+                    rate_limits: {
+                        production: '1000 requests/hour',
+                        development: '500 requests/hour', 
+                        demo: '100 requests/hour'
+                    },
+                    example_curl: {
+                        multi_trade: `curl -X POST https://8080-i0k34xlfbjev6sx7pzpya-6532622b.e2b.dev/api/estimates/multi-trade \\
+  -H "X-API-Key: YOUR_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"description": "Kitchen renovation with cabinets"}'`
+                    }
+                }
+            });
         });
 
         // Add microservices integration routes

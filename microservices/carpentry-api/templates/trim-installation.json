@@ -1,0 +1,262 @@
+{
+  "job_id": "trim_installation_carpentry",
+  "trade": "carpentry", 
+  "job_name": "Interior Trim Installation",
+  "description": "Professional interior trim installation including baseboards, casing, and crown molding",
+  "specialty": "finish_carpentry",
+
+  "phases": [
+    {
+      "phase_id": "prep",
+      "phase_name": "Trim Preparation",
+      "sequence": 1,
+      "tasks": [
+        {
+          "task": "Measure and mark trim locations",
+          "labor_hours_per_lf": 0.05,
+          "skill_level": "carpenter",
+          "tools": ["measuring_tape", "pencil", "level"]
+        },
+        {
+          "task": "Cut trim to length",
+          "labor_hours_per_lf": 0.1,
+          "skill_level": "carpenter", 
+          "tools": ["miter_saw", "measuring_tape"]
+        }
+      ]
+    },
+    {
+      "phase_id": "installation",
+      "phase_name": "Trim Installation",
+      "sequence": 2,
+      "tasks": [
+        {
+          "task": "Install baseboards",
+          "labor_hours_per_lf": 0.2,
+          "skill_level": "carpenter",
+          "tools": ["finish_nailer", "level", "coping_saw"]
+        },
+        {
+          "task": "Install door and window casing",
+          "labor_hours_per_opening": 1.5,
+          "skill_level": "carpenter",
+          "tools": ["finish_nailer", "miter_saw", "reveal_gauge"]
+        },
+        {
+          "task": "Install crown molding",
+          "labor_hours_per_lf": 0.4,
+          "skill_level": "carpenter",
+          "tools": ["finish_nailer", "miter_saw", "coping_saw"],
+          "condition": "if_crown_molding_specified"
+        }
+      ]
+    },
+    {
+      "phase_id": "finishing",
+      "phase_name": "Trim Finishing",
+      "sequence": 3,
+      "tasks": [
+        {
+          "task": "Fill nail holes and joints",
+          "labor_hours_per_lf": 0.05,
+          "skill_level": "carpenter",
+          "tools": ["wood_filler", "putty_knife"]
+        },
+        {
+          "task": "Sand filled areas",
+          "labor_hours_per_lf": 0.03,
+          "skill_level": "carpenter", 
+          "tools": ["sandpaper", "sanding_block"]
+        },
+        {
+          "task": "Caulk joints and gaps",
+          "labor_hours_per_lf": 0.04,
+          "skill_level": "carpenter",
+          "tools": ["caulk_gun", "painter_caulk"]
+        }
+      ]
+    }
+  ],
+
+  "materials": [
+    {
+      "category": "trim_lumber",
+      "items": [
+        {
+          "item": "Baseboard Trim",
+          "unit": "linear_foot",
+          "cost_per_unit": {
+            "budget": 2.50,
+            "mid_range": 4.50,
+            "high_end": 8.50,
+            "luxury": 15.00
+          },
+          "calculation": "room_perimeter",
+          "waste_factor": 0.15
+        },
+        {
+          "item": "Door Casing",
+          "unit": "linear_foot", 
+          "cost_per_unit": {
+            "budget": 3.50,
+            "mid_range": 6.50,
+            "high_end": 12.00,
+            "luxury": 22.00
+          },
+          "calculation": "door_opening_count * 17",
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Window Casing",
+          "unit": "linear_foot",
+          "cost_per_unit": {
+            "budget": 3.50,
+            "mid_range": 6.50,
+            "high_end": 12.00,
+            "luxury": 22.00
+          },
+          "calculation": "window_opening_count * 14",
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Crown Molding",
+          "unit": "linear_foot",
+          "cost_per_unit": {
+            "budget": 5.50,
+            "mid_range": 9.50,
+            "high_end": 18.00,
+            "luxury": 35.00
+          },
+          "calculation": "room_perimeter",
+          "waste_factor": 0.2,
+          "condition": "if_crown_molding_specified"
+        }
+      ]
+    },
+    {
+      "category": "fasteners_and_supplies",
+      "items": [
+        {
+          "item": "Finish Nails 2\"",
+          "unit": "box",
+          "cost_per_unit": 12,
+          "calculation": "linear_feet / 50",
+          "waste_factor": 0
+        },
+        {
+          "item": "Finish Nails 2.5\"", 
+          "unit": "box",
+          "cost_per_unit": 14,
+          "calculation": "linear_feet / 50",
+          "waste_factor": 0
+        },
+        {
+          "item": "Wood Filler",
+          "unit": "tube",
+          "cost_per_unit": 8,
+          "calculation": "linear_feet / 100",
+          "waste_factor": 0
+        },
+        {
+          "item": "Painter's Caulk",
+          "unit": "tube",
+          "cost_per_unit": 5,
+          "calculation": "linear_feet / 75",
+          "waste_factor": 0
+        }
+      ]
+    }
+  ],
+
+  "labor_rates": {
+    "carpenter": {
+      "min": 50,
+      "typical": 62,
+      "max": 80,
+      "description": "Finish carpenter with trim expertise"
+    },
+    "helper": {
+      "min": 22,
+      "typical": 28,
+      "max": 35,
+      "description": "Construction helper for material handling"
+    }
+  },
+
+  "calculations": {
+    "room_perimeter": {
+      "formula": "2 * (length + width)",
+      "description": "Basic room perimeter calculation"
+    },
+    "door_opening_count": {
+      "formula": "user_specified",
+      "description": "Number of door openings requiring casing"
+    },
+    "window_opening_count": {
+      "formula": "user_specified", 
+      "description": "Number of window openings requiring casing"
+    }
+  },
+
+  "complications": [
+    {
+      "issue": "Walls not square or plumb",
+      "likelihood": "high",
+      "additional_hours_per_lf": 0.1,
+      "additional_material_cost": 15,
+      "description": "Requires scribing and custom cuts"
+    },
+    {
+      "issue": "Existing trim removal damage",
+      "likelihood": "medium",
+      "additional_hours_per_lf": 0.05,
+      "additional_material_cost": 25,
+      "description": "Wall repairs needed before installation"
+    },
+    {
+      "issue": "Matching existing trim profiles",
+      "likelihood": "medium",
+      "additional_hours_per_lf": 0.08,
+      "additional_material_cost": 50,
+      "description": "May require custom milling"
+    },
+    {
+      "issue": "Electrical outlet/switch conflicts",
+      "likelihood": "low",
+      "additional_hours": 1,
+      "additional_material_cost": 20,
+      "description": "Requires notching trim around outlets"
+    }
+  ],
+
+  "quality_tiers": {
+    "budget": {
+      "description": "Paint-grade pine or MDF trim",
+      "material_multiplier": 0.7,
+      "typical_profiles": ["Simple colonial", "Basic ranch"]
+    },
+    "mid_range": {
+      "description": "Solid wood with standard profiles", 
+      "material_multiplier": 1.0,
+      "typical_profiles": ["Craftsman", "Traditional"]
+    },
+    "high_end": {
+      "description": "Premium hardwood with detailed profiles",
+      "material_multiplier": 1.8,
+      "typical_profiles": ["Victorian", "Custom millwork"]
+    },
+    "luxury": {
+      "description": "Exotic hardwoods with hand-crafted details",
+      "material_multiplier": 2.8,
+      "typical_profiles": ["Museum quality", "Architectural millwork"]
+    }
+  },
+
+  "timeline_factors": {
+    "prep_time": "0.5 days per room",
+    "installation_rate": "100-150 linear_feet_per_day",
+    "weather_dependency": "none",
+    "inspection_required": false,
+    "paint_ready": "immediately_after_installation"
+  }
+}

@@ -1,0 +1,348 @@
+{
+  "job_id": "kitchen_cabinets_carpentry",
+  "trade": "carpentry",
+  "job_name": "Kitchen Cabinet Installation",
+  "description": "Professional kitchen cabinet installation including uppers, lowers, and trim work",
+  "specialty": "cabinetry",
+  
+  "phases": [
+    {
+      "phase_id": "demolition",
+      "phase_name": "Cabinet Demolition",
+      "sequence": 1,
+      "tasks": [
+        {
+          "task": "Remove existing upper cabinets",
+          "labor_hours_per_lf": 0.3,
+          "skill_level": "carpenter",
+          "tools": ["pry_bar", "drill", "reciprocating_saw"]
+        },
+        {
+          "task": "Remove existing lower cabinets", 
+          "labor_hours_per_lf": 0.4,
+          "skill_level": "carpenter",
+          "tools": ["pry_bar", "drill", "hand_tools"]
+        },
+        {
+          "task": "Clean and prep installation area",
+          "labor_hours_per_lf": 0.1,
+          "skill_level": "helper",
+          "tools": ["broom", "vacuum", "cleaning_supplies"]
+        }
+      ]
+    },
+    {
+      "phase_id": "installation",
+      "phase_name": "Cabinet Installation", 
+      "sequence": 2,
+      "tasks": [
+        {
+          "task": "Install upper cabinets",
+          "labor_hours_per_lf": 0.8,
+          "skill_level": "carpenter",
+          "tools": ["level", "drill", "cabinet_screws", "shims"],
+          "notes": "Must be installed first for proper alignment"
+        },
+        {
+          "task": "Install lower cabinets",
+          "labor_hours_per_lf": 1.0,
+          "skill_level": "carpenter", 
+          "tools": ["level", "drill", "cabinet_screws", "shims"],
+          "notes": "Level and align with uppers"
+        },
+        {
+          "task": "Install cabinet doors and drawers",
+          "labor_hours_per_lf": 0.4,
+          "skill_level": "carpenter",
+          "tools": ["drill", "hinges", "drawer_slides"]
+        },
+        {
+          "task": "Install cabinet hardware",
+          "labor_hours_per_lf": 0.3,
+          "skill_level": "carpenter",
+          "tools": ["drill", "templates", "handles_knobs"]
+        }
+      ]
+    },
+    {
+      "phase_id": "finishing",
+      "phase_name": "Cabinet Finishing",
+      "sequence": 3,
+      "tasks": [
+        {
+          "task": "Install crown molding",
+          "labor_hours_per_lf": 0.4,
+          "skill_level": "carpenter",
+          "tools": ["miter_saw", "finish_nailer", "coping_saw"],
+          "condition": "if_crown_molding_specified"
+        },
+        {
+          "task": "Install toe kicks and fillers",
+          "labor_hours_per_lf": 0.2,
+          "skill_level": "carpenter",
+          "tools": ["table_saw", "finish_nailer"]
+        },
+        {
+          "task": "Final adjustments and touch-ups",
+          "labor_hours_per_lf": 0.2,
+          "skill_level": "carpenter", 
+          "tools": ["screwdrivers", "sandpaper", "wood_filler"]
+        }
+      ]
+    }
+  ],
+
+  "materials": [
+    {
+      "category": "cabinet_boxes",
+      "items": [
+        {
+          "item": "Upper Cabinet Boxes",
+          "unit": "linear_foot",
+          "cost_per_unit": {
+            "budget": 85,
+            "mid_range": 120,
+            "high_end": 180,
+            "luxury": 280
+          },
+          "calculation": "upper_cabinet_linear_feet",
+          "waste_factor": 0.05
+        },
+        {
+          "item": "Base Cabinet Boxes",
+          "unit": "linear_foot", 
+          "cost_per_unit": {
+            "budget": 110,
+            "mid_range": 180,
+            "high_end": 250,
+            "luxury": 380
+          },
+          "calculation": "base_cabinet_linear_feet",
+          "waste_factor": 0.05
+        }
+      ]
+    },
+    {
+      "category": "doors_and_faces",
+      "items": [
+        {
+          "item": "Cabinet Doors",
+          "unit": "each",
+          "cost_per_unit": {
+            "budget": 35,
+            "mid_range": 65,
+            "high_end": 120,
+            "luxury": 200
+          },
+          "calculation": "door_count_from_linear_feet",
+          "waste_factor": 0.02
+        },
+        {
+          "item": "Drawer Faces",
+          "unit": "each",
+          "cost_per_unit": {
+            "budget": 25,
+            "mid_range": 45,
+            "high_end": 85,
+            "luxury": 150
+          },
+          "calculation": "drawer_count_from_linear_feet",
+          "waste_factor": 0.02
+        }
+      ]
+    },
+    {
+      "category": "hardware",
+      "items": [
+        {
+          "item": "Cabinet Hinges",
+          "unit": "each",
+          "cost_per_unit": {
+            "budget": 3.50,
+            "mid_range": 6.50,
+            "high_end": 12.00,
+            "luxury": 25.00
+          },
+          "calculation": "door_count * 2",
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Drawer Slides",
+          "unit": "pair",
+          "cost_per_unit": {
+            "budget": 8,
+            "mid_range": 18,
+            "high_end": 35,
+            "luxury": 65
+          },
+          "calculation": "drawer_count",
+          "waste_factor": 0.05
+        },
+        {
+          "item": "Pulls and Knobs",
+          "unit": "each",
+          "cost_per_unit": {
+            "budget": 4,
+            "mid_range": 12,
+            "high_end": 25,
+            "luxury": 50
+          },
+          "calculation": "door_count + drawer_count", 
+          "waste_factor": 0.05
+        }
+      ]
+    },
+    {
+      "category": "trim_and_molding",
+      "items": [
+        {
+          "item": "Crown Molding",
+          "unit": "linear_foot",
+          "cost_per_unit": {
+            "budget": 5.50,
+            "mid_range": 8.50,
+            "high_end": 15.00,
+            "luxury": 28.00
+          },
+          "calculation": "upper_cabinet_linear_feet",
+          "waste_factor": 0.15,
+          "condition": "if_crown_molding_specified"
+        },
+        {
+          "item": "Toe Kick Material",
+          "unit": "linear_foot",
+          "cost_per_unit": {
+            "budget": 3.50,
+            "mid_range": 5.50,
+            "high_end": 8.50,
+            "luxury": 15.00
+          },
+          "calculation": "base_cabinet_linear_feet",
+          "waste_factor": 0.1
+        }
+      ]
+    },
+    {
+      "category": "installation_supplies",
+      "items": [
+        {
+          "item": "Cabinet Screws 2.5\"",
+          "unit": "box_100",
+          "cost_per_unit": 15,
+          "calculation": "linear_feet / 10",
+          "waste_factor": 0
+        },
+        {
+          "item": "Shims",
+          "unit": "bundle",
+          "cost_per_unit": 8,
+          "calculation": "linear_feet / 8", 
+          "waste_factor": 0
+        },
+        {
+          "item": "Wood Glue",
+          "unit": "bottle",
+          "cost_per_unit": 12,
+          "calculation": "1_per_job",
+          "waste_factor": 0
+        }
+      ]
+    }
+  ],
+
+  "labor_rates": {
+    "carpenter": {
+      "min": 55,
+      "typical": 65,
+      "max": 85,
+      "description": "Skilled cabinet installer"
+    },
+    "helper": {
+      "min": 25,
+      "typical": 32,
+      "max": 40,
+      "description": "General construction helper"
+    }
+  },
+
+  "calculations": {
+    "upper_cabinet_linear_feet": {
+      "formula": "total_linear_feet * 0.6",
+      "description": "Typically 60% of total kitchen perimeter"
+    },
+    "base_cabinet_linear_feet": {
+      "formula": "total_linear_feet * 0.8", 
+      "description": "Typically 80% of total kitchen perimeter"
+    },
+    "door_count_from_linear_feet": {
+      "formula": "linear_feet * 1.2",
+      "description": "Average 1.2 doors per linear foot"
+    },
+    "drawer_count_from_linear_feet": {
+      "formula": "base_linear_feet * 0.8",
+      "description": "Most base cabinets have drawers"
+    }
+  },
+
+  "complications": [
+    {
+      "issue": "Walls not plumb or level",
+      "likelihood": "high",
+      "additional_hours_per_lf": 0.2,
+      "additional_material_cost": 25,
+      "description": "Requires shimming and adjustments"
+    },
+    {
+      "issue": "Electrical outlet conflicts",
+      "likelihood": "medium",
+      "additional_hours": 2,
+      "additional_material_cost": 50,
+      "description": "May need to relocate outlets or modify cabinets"
+    },
+    {
+      "issue": "Plumbing line conflicts", 
+      "likelihood": "medium",
+      "additional_hours": 3,
+      "additional_material_cost": 75,
+      "description": "May require cabinet modifications"
+    },
+    {
+      "issue": "Cabinet damage during delivery",
+      "likelihood": "low",
+      "additional_hours": 0,
+      "additional_material_cost": 500,
+      "description": "Replacement cabinet needed"
+    }
+  ],
+
+  "quality_tiers": {
+    "budget": {
+      "description": "Basic thermofoil or laminate cabinets",
+      "material_multiplier": 0.7,
+      "typical_brands": ["Home Depot", "Lowes", "IKEA"]
+    },
+    "mid_range": {
+      "description": "Quality wood cabinets with standard features",
+      "material_multiplier": 1.0,
+      "typical_brands": ["KraftMaid", "Merillat", "American Woodmark"]
+    },
+    "high_end": {
+      "description": "Premium wood with soft-close and custom features",
+      "material_multiplier": 1.8,
+      "typical_brands": ["Wellborn", "Crystal Cabinets", "Yorktowne"]
+    },
+    "luxury": {
+      "description": "Custom millwork with premium materials",
+      "material_multiplier": 2.5,
+      "typical_brands": ["Custom Shop", "SieMatic", "Poggenpohl"]
+    }
+  },
+
+  "timeline_factors": {
+    "measurement_to_delivery": "4-8 weeks",
+    "installation_rate": "8-12 linear_feet_per_day", 
+    "weather_dependency": "none",
+    "inspection_required": false,
+    "curing_time": "none"
+  }
+}

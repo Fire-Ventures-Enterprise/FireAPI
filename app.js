@@ -114,15 +114,19 @@ class FireAPIApp {
         this.app.use(async (req, res, next) => {
             if (!this.apiInitialized) {
                 try {
+                    console.log('🔧 Initializing API for request:', req.path);
+                    console.log('API object exists:', !!this.api);
                     await this.api.initialize();
                     this.apiInitialized = true;
+                    console.log('✅ API initialized successfully');
                 } catch (error) {
-                    console.error('Failed to initialize API:', error);
+                    console.error('❌ Failed to initialize API:', error);
+                    console.error('Error stack:', error.stack);
                     return res.status(503).json({
                         success: false,
                         error: {
                             code: 'SERVICE_UNAVAILABLE',
-                            message: 'API initialization failed'
+                            message: 'API initialization failed: ' + error.message
                         }
                     });
                 }
@@ -159,8 +163,20 @@ class FireAPIApp {
 
         // API statistics endpoint
         this.app.get('/stats', (req, res) => {
-            const stats = this.api.getStats();
-            res.json(stats);
+            try {
+                console.log('Stats endpoint called, API object:', !!this.api);
+                const stats = this.api.getStats();
+                res.json(stats);
+            } catch (error) {
+                console.error('Stats endpoint error:', error);
+                res.status(500).json({
+                    success: false,
+                    error: {
+                        code: 'STATS_ERROR',
+                        message: error.message
+                    }
+                });
+            }
         });
 
         // Main API routes handler

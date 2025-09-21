@@ -1,5 +1,25 @@
 // FireBuildAI Demo Site JavaScript
 
+// API Configuration - Connect Frontend to Backend
+const API_CONFIG = {
+    // TODO: Replace with your actual Railway API URL
+    // Get this from your Railway dashboard: Settings > Domains
+    // Example: 'https://fireapi-production-xxxx.up.railway.app'
+    baseURL: 'https://your-railway-app.up.railway.app',
+    
+    // Alternative: use fireapi.dev when custom domain is configured
+    // baseURL: 'https://fireapi.dev',
+    endpoints: {
+        analyze: '/api/projects/analyze',
+        completeAnalysis: '/api/projects/complete-analysis', 
+        workflows: '/api/workflows/generate',
+        costs: '/api/costs/estimate',
+        regions: '/api/costs/regions',
+        templates: '/api/workflows/templates'
+    },
+    timeout: 30000 // 30 second timeout for API calls
+};
+
 // Global variables
 let sequenceTimer = null;
 let currentSequenceStep = 0;
@@ -160,6 +180,66 @@ function resetProjectData() {
     console.log('✅ Project data completely reset for new analysis');
 }
 
+// API Utility Functions
+async function callAPI(endpoint, method = 'GET', data = null) {
+    const url = `${API_CONFIG.baseURL}${endpoint}`;
+    console.log(`🌐 Making ${method} request to:`, url);
+    
+    const options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    };
+    
+    if (data && method !== 'GET') {
+        options.body = JSON.stringify(data);
+    }
+    
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
+        options.signal = controller.signal;
+        
+        const response = await fetch(url, options);
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        console.log('✅ API Response:', result);
+        return result;
+        
+    } catch (error) {
+        console.error('❌ API Call Failed:', error);
+        
+        // Show user-friendly error message
+        if (error.name === 'AbortError') {
+            throw new Error('Request timed out. Please try again.');
+        } else if (error.message.includes('Failed to fetch')) {
+            throw new Error('Cannot connect to API. Please check your internet connection or try again later.');
+        } else {
+            throw error;
+        }
+    }
+}
+
+// Test API connectivity
+async function testAPIConnection() {
+    try {
+        console.log('🔍 Testing API connection...');
+        const response = await callAPI('/api/health', 'GET');
+        console.log('✅ API connection successful:', response);
+        return true;
+    } catch (error) {
+        console.error('❌ API connection failed:', error);
+        return false;
+    }
+}
+
 // Analyze project and start AI conversation
 function analyzeProject() {
     console.log('🚀 analyzeProject function called');
@@ -197,18 +277,70 @@ function analyzeProject() {
     startAIAnalysis(description);
 }
 
-function startAIAnalysis(description) {
+async function startAIAnalysis(description) {
     // Add initial AI message
     addAIMessage("🧠 Analyzing your project description...", true);
     
-    setTimeout(() => {
-        // Parse the project description
-        const analysis = parseProjectDescription(description);
-        projectData = { ...analysis, originalDescription: description };
+    try {
+        // First test API connectivity
+        const isConnected = await testAPIConnection();
+        if (!isConnected) {
+            throw new Error('Cannot connect to FireAPI. Falling back to local analysis.');
+        }
         
-        // Continue with AI questioning
-        continueAIAnalysis();
-    }, 2000);
+        // Make real API call to analyze the project
+        addAIMessage("🔗 Connected to FireAPI.dev - Running AI analysis...", true);
+        
+        const analysisRequest = {
+            description: description,
+            options: {
+                location: currentRegion || 'US-national-average',
+                includeWorkflow: true,
+                includeCosts: true
+            }
+        };
+        
+        const apiResponse = await callAPI(API_CONFIG.endpoints.completeAnalysis, 'POST', analysisRequest);
+        
+        if (apiResponse.success) {
+            // Use real API response
+            projectData = {
+                ...apiResponse.data,
+                originalDescription: description
+            };
+            
+            // Store workflow data for visualization
+            currentWorkflowData = apiResponse.data.workflow;
+            
+            addAIMessage("✅ AI analysis completed! I've analyzed your project and generated an optimized workflow.", true);
+            
+            // Show the workflow visualization
+            if (currentWorkflowData) {
+                displayWorkflowVisualization(currentWorkflowData);
+            }
+            
+            // Continue with AI questioning based on real analysis
+            continueAIAnalysis();
+            
+        } else {
+            throw new Error(apiResponse.message || 'API analysis failed');
+        }
+        
+    } catch (error) {
+        console.warn('⚠️ API analysis failed, falling back to local simulation:', error);
+        
+        // Fallback to local analysis if API fails
+        addAIMessage(`⚠️ ${error.message} Using local simulation instead.`, true);
+        
+        setTimeout(() => {
+            // Parse the project description locally
+            const analysis = parseProjectDescription(description);
+            projectData = { ...analysis, originalDescription: description };
+            
+            // Continue with AI questioning
+            continueAIAnalysis();
+        }, 1000);
+    }
 }
 
 function parseProjectDescription(description) {

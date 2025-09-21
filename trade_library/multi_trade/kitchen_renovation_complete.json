@@ -1,0 +1,1672 @@
+{
+  "job_id": "kitchen_renovation_complete",
+  "trade_category": "Multi-Trade",
+  "job_name": "Complete Kitchen Renovation",
+  "description": "Full kitchen renovation including demolition, electrical, plumbing, flooring, countertops, backsplash, cabinetry, painting, and cleanup",
+  "estimated_duration_days": "14-21",
+  "complexity_level": "high",
+  
+  "phases": [
+    {
+      "phase_id": "phase_1",
+      "phase_name": "Pre-Construction & Planning",
+      "sequence": 1,
+      "duration_days": "1-2",
+      "tasks": [
+        {
+          "task_id": "permits",
+          "task": "Obtain permits and schedule inspections",
+          "labor_hours": 4,
+          "skill_level": "contractor",
+          "hourly_rate_category": "management",
+          "tools_required": [],
+          "prerequisites": [],
+          "notes": "May take 1-2 weeks for permit approval"
+        },
+        {
+          "task_id": "material_delivery",
+          "task": "Coordinate material delivery schedule",
+          "labor_hours": 2,
+          "skill_level": "contractor",
+          "hourly_rate_category": "management",
+          "tools_required": [],
+          "prerequisites": ["permits"]
+        },
+        {
+          "task_id": "utility_shutoffs",
+          "task": "Shut off water, electrical circuits, gas if applicable",
+          "labor_hours": 1,
+          "skill_level": "skilled_tradesman",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["multimeter", "pipe_wrench"],
+          "prerequisites": []
+        },
+        {
+          "task_id": "protection_setup",
+          "task": "Install protective covering and barriers",
+          "labor_hours": 3,
+          "skill_level": "helper",
+          "hourly_rate_category": "helper",
+          "tools_required": ["plastic_sheeting", "tape", "cardboard"],
+          "prerequisites": []
+        },
+        {
+          "task_id": "dumpster_placement",
+          "task": "Position dumpster and establish debris removal plan",
+          "labor_hours": 1,
+          "skill_level": "helper",
+          "hourly_rate_category": "helper",
+          "tools_required": [],
+          "prerequisites": []
+        }
+      ],
+      "materials": [
+        {
+          "item": "Construction Permits",
+          "category": "permits_fees",
+          "unit": "per_job",
+          "quantity": 1,
+          "unit_cost_base": 500,
+          "waste_factor": 0,
+          "notes": "Varies significantly by jurisdiction"
+        },
+        {
+          "item": "Protective Plastic Sheeting",
+          "category": "consumables",
+          "unit": "roll",
+          "quantity": 3,
+          "unit_cost_base": 45,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Dumpster Rental (20 yard)",
+          "category": "equipment_rental",
+          "unit": "per_week",
+          "quantity": 3,
+          "unit_cost_base": 400,
+          "waste_factor": 0
+        }
+      ]
+    },
+    
+    {
+      "phase_id": "phase_2", 
+      "phase_name": "Demolition",
+      "sequence": 2,
+      "duration_days": "1-2",
+      "tasks": [
+        {
+          "task_id": "appliance_removal",
+          "task": "Disconnect and remove all appliances",
+          "labor_hours": 4,
+          "skill_level": "skilled_tradesman",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["dolly", "appliance_straps", "basic_tools"],
+          "prerequisites": ["utility_shutoffs"],
+          "notes": "May require appliance disposal fees"
+        },
+        {
+          "task_id": "upper_cabinet_demo",
+          "task": "Remove upper cabinets and mounting hardware",
+          "labor_hours": 6,
+          "skill_level": "carpenter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["drill", "pry_bar", "reciprocating_saw", "safety_gear"],
+          "prerequisites": ["appliance_removal"]
+        },
+        {
+          "task_id": "lower_cabinet_demo",
+          "task": "Remove lower cabinets and island",
+          "labor_hours": 8,
+          "skill_level": "carpenter", 
+          "hourly_rate_category": "skilled",
+          "tools_required": ["drill", "pry_bar", "reciprocating_saw"],
+          "prerequisites": ["upper_cabinet_demo"]
+        },
+        {
+          "task_id": "countertop_removal",
+          "task": "Remove countertops and backsplash",
+          "labor_hours": 4,
+          "skill_level": "carpenter",
+          "hourly_rate_category": "skilled", 
+          "tools_required": ["pry_bar", "hammer", "chisel", "grinder"],
+          "prerequisites": ["lower_cabinet_demo"],
+          "notes": "Stone countertops require special handling"
+        },
+        {
+          "task_id": "flooring_demo",
+          "task": "Remove existing flooring to subfloor",
+          "labor_hours": 6,
+          "skill_level": "flooring_installer",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["floor_scraper", "pry_bar", "circular_saw"],
+          "prerequisites": ["countertop_removal"],
+          "condition": "if_replacing_flooring"
+        },
+        {
+          "task_id": "electrical_demo",
+          "task": "Remove light fixtures and disconnect wiring",
+          "labor_hours": 3,
+          "skill_level": "electrician",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["wire_nuts", "electrical_tape", "multimeter"],
+          "prerequisites": ["utility_shutoffs"]
+        },
+        {
+          "task_id": "debris_removal",
+          "task": "Load and remove all demolition debris",
+          "labor_hours": 4,
+          "skill_level": "helper",
+          "hourly_rate_category": "helper",
+          "tools_required": ["wheelbarrow", "shovels", "brooms"],
+          "prerequisites": ["flooring_demo", "electrical_demo"]
+        }
+      ],
+      "materials": [
+        {
+          "item": "Demolition Tools Consumables",
+          "category": "consumables",
+          "unit": "per_job",
+          "quantity": 1,
+          "unit_cost_base": 150,
+          "waste_factor": 0,
+          "notes": "Saw blades, drill bits, safety gear"
+        },
+        {
+          "item": "Debris Bags (Heavy Duty)", 
+          "category": "consumables",
+          "unit": "box_50",
+          "quantity": 2,
+          "unit_cost_base": 85,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Appliance Disposal Fee",
+          "category": "fees",
+          "unit": "per_appliance",
+          "quantity": 4,
+          "unit_cost_base": 75,
+          "waste_factor": 0,
+          "condition": "if_disposing_appliances"
+        }
+      ]
+    },
+
+    {
+      "phase_id": "phase_3",
+      "phase_name": "Rough-In Work",
+      "sequence": 3,
+      "duration_days": "2-3",
+      "tasks": [
+        {
+          "task_id": "electrical_rough_new_circuits",
+          "task": "Install new electrical circuits and panel work",
+          "labor_hours": 8,
+          "skill_level": "electrician",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["wire_pulling_system", "conduit_bender", "multimeter"],
+          "prerequisites": ["debris_removal"],
+          "notes": "May require panel upgrade"
+        },
+        {
+          "task_id": "electrical_rough_outlets",
+          "task": "Install outlet boxes and switch boxes",
+          "labor_hours": 6,
+          "skill_level": "electrician",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["drill", "hole_saw", "fish_tape"],
+          "prerequisites": ["electrical_rough_new_circuits"]
+        },
+        {
+          "task_id": "electrical_rough_undercabinet",
+          "task": "Run wiring for under-cabinet lighting",
+          "labor_hours": 4,
+          "skill_level": "electrician",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["low_voltage_wire", "fish_tape"],
+          "prerequisites": ["electrical_rough_outlets"]
+        },
+        {
+          "task_id": "plumbing_rough_supply",
+          "task": "Install new water supply lines",
+          "labor_hours": 6,
+          "skill_level": "plumber",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["pipe_cutter", "torch", "fittings"],
+          "prerequisites": ["electrical_rough_new_circuits"]
+        },
+        {
+          "task_id": "plumbing_rough_drain",
+          "task": "Install new drain lines and venting",
+          "labor_hours": 8,
+          "skill_level": "plumber",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["pipe_cutter", "drain_snake", "level"],
+          "prerequisites": ["plumbing_rough_supply"],
+          "notes": "May require opening walls/floors"
+        },
+        {
+          "task_id": "gas_line_install",
+          "task": "Install gas line for range/cooktop",
+          "labor_hours": 4,
+          "skill_level": "plumber",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["pipe_wrench", "gas_detector", "pipe_dope"],
+          "prerequisites": ["plumbing_rough_drain"],
+          "condition": "if_gas_appliances"
+        },
+        {
+          "task_id": "rough_inspection",
+          "task": "Schedule and pass rough-in inspections",
+          "labor_hours": 2,
+          "skill_level": "contractor",
+          "hourly_rate_category": "management",
+          "tools_required": [],
+          "prerequisites": ["gas_line_install", "electrical_rough_undercabinet"]
+        }
+      ],
+      "materials": [
+        {
+          "item": "Electrical Wire 12 AWG",
+          "category": "electrical",
+          "unit": "linear_foot",
+          "quantity": 200,
+          "unit_cost_base": 0.85,
+          "waste_factor": 0.15,
+          "calculation_method": "kitchen_perimeter_x2"
+        },
+        {
+          "item": "Electrical Wire 14 AWG", 
+          "category": "electrical",
+          "unit": "linear_foot",
+          "quantity": 150,
+          "unit_cost_base": 0.65,
+          "waste_factor": 0.15
+        },
+        {
+          "item": "Outlet Boxes",
+          "category": "electrical",
+          "unit": "each",
+          "quantity": 8,
+          "unit_cost_base": 3.50,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Switch Boxes",
+          "category": "electrical", 
+          "unit": "each",
+          "quantity": 4,
+          "unit_cost_base": 3.50,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Circuit Breakers 20A",
+          "category": "electrical",
+          "unit": "each", 
+          "quantity": 3,
+          "unit_cost_base": 25,
+          "waste_factor": 0
+        },
+        {
+          "item": "Copper Supply Lines 3/4\"",
+          "category": "plumbing",
+          "unit": "linear_foot",
+          "quantity": 50,
+          "unit_cost_base": 2.85,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Copper Supply Lines 1/2\"",
+          "category": "plumbing", 
+          "unit": "linear_foot",
+          "quantity": 30,
+          "unit_cost_base": 2.25,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "PVC Drain Pipe 3\"",
+          "category": "plumbing",
+          "unit": "linear_foot",
+          "quantity": 25,
+          "unit_cost_base": 4.50,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Pipe Fittings Assortment",
+          "category": "plumbing",
+          "unit": "per_job",
+          "quantity": 1,
+          "unit_cost_base": 125,
+          "waste_factor": 0.05
+        },
+        {
+          "item": "Gas Line Black Pipe 1/2\"",
+          "category": "plumbing",
+          "unit": "linear_foot", 
+          "quantity": 15,
+          "unit_cost_base": 3.75,
+          "waste_factor": 0.1,
+          "condition": "if_gas_appliances"
+        }
+      ]
+    },
+
+    {
+      "phase_id": "phase_4",
+      "phase_name": "Structural & Drywall",
+      "sequence": 4,
+      "duration_days": "2-3",
+      "tasks": [
+        {
+          "task_id": "framing_modifications",
+          "task": "Modify framing for new layout",
+          "labor_hours": 12,
+          "skill_level": "carpenter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["circular_saw", "framing_nailer", "level"],
+          "prerequisites": ["rough_inspection"],
+          "condition": "if_structural_changes",
+          "notes": "May require structural engineer approval"
+        },
+        {
+          "task_id": "drywall_patching",
+          "task": "Patch and repair existing drywall",
+          "labor_hours": 6,
+          "skill_level": "drywall_finisher",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["drywall_saw", "taping_knives", "sanding_block"],
+          "prerequisites": ["framing_modifications"]
+        },
+        {
+          "task_id": "new_drywall_install",
+          "task": "Install new drywall sections",
+          "labor_hours": 8,
+          "skill_level": "drywall_finisher",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["drywall_lift", "screw_gun", "t_square"],
+          "prerequisites": ["drywall_patching"],
+          "condition": "if_new_drywall_needed"
+        },
+        {
+          "task_id": "drywall_taping",
+          "task": "Tape and mud all drywall joints",
+          "labor_hours": 12,
+          "skill_level": "drywall_finisher", 
+          "hourly_rate_category": "skilled",
+          "tools_required": ["taping_knives", "mud_pan", "sanding_equipment"],
+          "prerequisites": ["new_drywall_install"],
+          "notes": "Requires 3 coats with drying time"
+        },
+        {
+          "task_id": "texture_application",
+          "task": "Apply texture to match existing",
+          "labor_hours": 4,
+          "skill_level": "drywall_finisher",
+          "hourly_rate_category": "skilled", 
+          "tools_required": ["texture_sprayer", "brushes", "rollers"],
+          "prerequisites": ["drywall_taping"]
+        },
+        {
+          "task_id": "primer_application",
+          "task": "Prime all new and patched drywall",
+          "labor_hours": 3,
+          "skill_level": "painter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["brushes", "rollers", "drop_cloths"],
+          "prerequisites": ["texture_application"]
+        }
+      ],
+      "materials": [
+        {
+          "item": "Lumber 2x4 Studs",
+          "category": "structural",
+          "unit": "linear_foot",
+          "quantity": 50,
+          "unit_cost_base": 3.25,
+          "waste_factor": 0.15,
+          "condition": "if_structural_changes"
+        },
+        {
+          "item": "Drywall 1/2\" Sheets",
+          "category": "drywall",
+          "unit": "sheet_4x8",
+          "quantity": 8,
+          "unit_cost_base": 15,
+          "waste_factor": 0.15
+        },
+        {
+          "item": "Drywall Compound",
+          "category": "drywall",
+          "unit": "bucket_5gal",
+          "quantity": 3,
+          "unit_cost_base": 18,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Drywall Tape",
+          "category": "drywall",
+          "unit": "roll",
+          "quantity": 4,
+          "unit_cost_base": 4.50,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Texture Material",
+          "category": "drywall", 
+          "unit": "bag",
+          "quantity": 2,
+          "unit_cost_base": 12,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Primer Paint",
+          "category": "paint",
+          "unit": "gallon",
+          "quantity": 2,
+          "unit_cost_base": 35,
+          "waste_factor": 0.05
+        },
+        {
+          "item": "Drywall Screws",
+          "category": "fasteners",
+          "unit": "box",
+          "quantity": 2,
+          "unit_cost_base": 18,
+          "waste_factor": 0.1
+        }
+      ]
+    },
+
+    {
+      "phase_id": "phase_5",
+      "phase_name": "Flooring Installation", 
+      "sequence": 5,
+      "duration_days": "2-3",
+      "tasks": [
+        {
+          "task_id": "subfloor_prep",
+          "task": "Level and prep subfloor surface",
+          "labor_hours": 6,
+          "skill_level": "flooring_installer",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["belt_sander", "leveling_compound", "moisture_meter"],
+          "prerequisites": ["primer_application"]
+        },
+        {
+          "task_id": "underlayment_install",
+          "task": "Install underlayment if required",
+          "labor_hours": 3,
+          "skill_level": "flooring_installer", 
+          "hourly_rate_category": "skilled",
+          "tools_required": ["utility_knife", "staple_gun"],
+          "prerequisites": ["subfloor_prep"],
+          "condition": "if_underlayment_required"
+        },
+        {
+          "task_id": "flooring_layout",
+          "task": "Plan layout and make initial cuts",
+          "labor_hours": 2,
+          "skill_level": "flooring_installer",
+          "hourly_rate_category": "skilled", 
+          "tools_required": ["chalk_line", "measuring_tape", "square"],
+          "prerequisites": ["underlayment_install"]
+        },
+        {
+          "task_id": "flooring_installation", 
+          "task": "Install flooring material",
+          "labor_hours": 12,
+          "skill_level": "flooring_installer",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["miter_saw", "flooring_nailer", "pull_bar"],
+          "prerequisites": ["flooring_layout"],
+          "notes": "Time varies significantly by flooring type"
+        },
+        {
+          "task_id": "transition_strips",
+          "task": "Install transition strips and thresholds",
+          "labor_hours": 2,
+          "skill_level": "flooring_installer",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["miter_saw", "drill", "finish_nailer"],
+          "prerequisites": ["flooring_installation"]
+        },
+        {
+          "task_id": "flooring_cleanup",
+          "task": "Clean and inspect flooring installation",
+          "labor_hours": 2,
+          "skill_level": "helper",
+          "hourly_rate_category": "helper",
+          "tools_required": ["vacuum", "microfiber_cloths", "floor_cleaner"],
+          "prerequisites": ["transition_strips"]
+        }
+      ],
+      "materials": [
+        {
+          "item": "Hardwood Flooring",
+          "category": "flooring",
+          "unit": "square_foot", 
+          "quantity_calculation": "kitchen_square_footage",
+          "unit_cost_base": 8.50,
+          "waste_factor": 0.1,
+          "condition": "if_hardwood_selected",
+          "notes": "Price varies widely by species and grade"
+        },
+        {
+          "item": "Luxury Vinyl Plank",
+          "category": "flooring",
+          "unit": "square_foot",
+          "quantity_calculation": "kitchen_square_footage", 
+          "unit_cost_base": 4.25,
+          "waste_factor": 0.08,
+          "condition": "if_lvp_selected"
+        },
+        {
+          "item": "Ceramic Tile",
+          "category": "flooring",
+          "unit": "square_foot",
+          "quantity_calculation": "kitchen_square_footage",
+          "unit_cost_base": 6.50,
+          "waste_factor": 0.15,
+          "condition": "if_tile_selected"
+        },
+        {
+          "item": "Underlayment",
+          "category": "flooring",
+          "unit": "square_foot",
+          "quantity_calculation": "kitchen_square_footage",
+          "unit_cost_base": 0.85,
+          "waste_factor": 0.05,
+          "condition": "if_underlayment_required"
+        },
+        {
+          "item": "Flooring Adhesive",
+          "category": "flooring", 
+          "unit": "gallon",
+          "quantity": 2,
+          "unit_cost_base": 45,
+          "waste_factor": 0.1,
+          "condition": "if_glue_down_flooring"
+        },
+        {
+          "item": "Transition Strips",
+          "category": "flooring",
+          "unit": "linear_foot",
+          "quantity": 12,
+          "unit_cost_base": 8.50,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Flooring Nails/Staples", 
+          "category": "fasteners",
+          "unit": "box",
+          "quantity": 3,
+          "unit_cost_base": 25,
+          "waste_factor": 0.05
+        }
+      ]
+    },
+
+    {
+      "phase_id": "phase_6",
+      "phase_name": "Electrical & Plumbing Finish Prep",
+      "sequence": 6,
+      "duration_days": "1",
+      "tasks": [
+        {
+          "task_id": "electrical_finish_prep",
+          "task": "Prepare electrical for finish work",
+          "labor_hours": 4,
+          "skill_level": "electrician",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["wire_strippers", "multimeter", "wire_nuts"],
+          "prerequisites": ["flooring_cleanup"]
+        },
+        {
+          "task_id": "plumbing_finish_prep", 
+          "task": "Prepare plumbing for fixture installation",
+          "labor_hours": 3,
+          "skill_level": "plumber",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["pipe_wrench", "teflon_tape", "shutoff_valves"],
+          "prerequisites": ["flooring_cleanup"]
+        }
+      ],
+      "materials": [
+        {
+          "item": "Electrical Finish Materials",
+          "category": "electrical",
+          "unit": "per_job",
+          "quantity": 1,
+          "unit_cost_base": 85,
+          "waste_factor": 0.05
+        },
+        {
+          "item": "Plumbing Finish Materials",
+          "category": "plumbing", 
+          "unit": "per_job",
+          "quantity": 1,
+          "unit_cost_base": 125,
+          "waste_factor": 0.05
+        }
+      ]
+    },
+
+    {
+      "phase_id": "phase_7",
+      "phase_name": "Cabinet Installation",
+      "sequence": 7, 
+      "duration_days": "3-4",
+      "tasks": [
+        {
+          "task_id": "cabinet_delivery_inspection",
+          "task": "Receive and inspect cabinet delivery",
+          "labor_hours": 2,
+          "skill_level": "carpenter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["measuring_tape", "checklist"],
+          "prerequisites": ["electrical_finish_prep", "plumbing_finish_prep"]
+        },
+        {
+          "task_id": "upper_cabinet_install",
+          "task": "Install upper cabinets and secure to studs",
+          "labor_hours": 8,
+          "skill_level": "carpenter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["drill", "level", "cabinet_screws", "shims"],
+          "prerequisites": ["cabinet_delivery_inspection"]
+        },
+        {
+          "task_id": "lower_cabinet_install",
+          "task": "Install lower cabinets and island",
+          "labor_hours": 12,
+          "skill_level": "carpenter",
+          "hourly_rate_category": "skilled", 
+          "tools_required": ["drill", "level", "cabinet_screws", "shims"],
+          "prerequisites": ["upper_cabinet_install"]
+        },
+        {
+          "task_id": "cabinet_alignment",
+          "task": "Align and level all cabinet units",
+          "labor_hours": 4,
+          "skill_level": "carpenter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["level", "shims", "clamps"],
+          "prerequisites": ["lower_cabinet_install"]
+        },
+        {
+          "task_id": "cabinet_doors_drawers",
+          "task": "Install cabinet doors and drawer fronts",
+          "labor_hours": 6,
+          "skill_level": "carpenter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["drill", "hinges", "drawer_slides"],
+          "prerequisites": ["cabinet_alignment"]
+        },
+        {
+          "task_id": "crown_molding_install",
+          "task": "Install crown molding and trim",
+          "labor_hours": 6,
+          "skill_level": "carpenter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["miter_saw", "finish_nailer", "coping_saw"],
+          "prerequisites": ["cabinet_doors_drawers"]
+        },
+        {
+          "task_id": "hardware_installation", 
+          "task": "Install cabinet hardware and accessories",
+          "labor_hours": 4,
+          "skill_level": "carpenter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["drill", "templates", "screwdrivers"],
+          "prerequisites": ["crown_molding_install"]
+        }
+      ],
+      "materials": [
+        {
+          "item": "Kitchen Cabinets - Base Units",
+          "category": "cabinetry",
+          "unit": "linear_foot",
+          "quantity_calculation": "base_cabinet_linear_feet",
+          "unit_cost_base": 250,
+          "waste_factor": 0.05,
+          "notes": "Price varies dramatically by quality and style"
+        },
+        {
+          "item": "Kitchen Cabinets - Upper Units",
+          "category": "cabinetry",
+          "unit": "linear_foot", 
+          "quantity_calculation": "upper_cabinet_linear_feet",
+          "unit_cost_base": 180,
+          "waste_factor": 0.05
+        },
+        {
+          "item": "Cabinet Hardware Set",
+          "category": "cabinetry",
+          "unit": "per_door_drawer",
+          "quantity": 25,
+          "unit_cost_base": 12,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Crown Molding",
+          "category": "cabinetry",
+          "unit": "linear_foot",
+          "quantity": 25,
+          "unit_cost_base": 8.50,
+          "waste_factor": 0.15
+        },
+        {
+          "item": "Cabinet Screws and Fasteners",
+          "category": "fasteners",
+          "unit": "per_job",
+          "quantity": 1,
+          "unit_cost_base": 45,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Shims and Leveling Materials",
+          "category": "cabinetry",
+          "unit": "per_job", 
+          "quantity": 1,
+          "unit_cost_base": 25,
+          "waste_factor": 0.05
+        }
+      ]
+    },
+
+    {
+      "phase_id": "phase_8",
+      "phase_name": "Countertop Installation",
+      "sequence": 8,
+      "duration_days": "1-2",
+      "tasks": [
+        {
+          "task_id": "countertop_template",
+          "task": "Create countertop template", 
+          "labor_hours": 3,
+          "skill_level": "countertop_fabricator",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["template_material", "jigsaw", "measuring_tape"],
+          "prerequisites": ["hardware_installation"],
+          "notes": "Usually done by countertop supplier"
+        },
+        {
+          "task_id": "countertop_fabrication",
+          "task": "Fabricate countertops off-site",
+          "labor_hours": 0,
+          "skill_level": "countertop_fabricator",
+          "hourly_rate_category": "skilled",
+          "tools_required": [],
+          "prerequisites": ["countertop_template"],
+          "notes": "Off-site work, 3-7 days lead time"
+        },
+        {
+          "task_id": "countertop_installation",
+          "task": "Install fabricated countertops",
+          "labor_hours": 6,
+          "skill_level": "countertop_fabricator",
+          "hourly_rate_category": "skilled", 
+          "tools_required": ["lifting_equipment", "shims", "adhesive"],
+          "prerequisites": ["countertop_fabrication"]
+        },
+        {
+          "task_id": "sink_cutout",
+          "task": "Cut sink opening and install sink",
+          "labor_hours": 2,
+          "skill_level": "countertop_fabricator",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["jigsaw", "sink_clips", "silicone"],
+          "prerequisites": ["countertop_installation"]
+        },
+        {
+          "task_id": "countertop_sealing",
+          "task": "Seal countertop joints and edges",
+          "labor_hours": 2,
+          "skill_level": "countertop_fabricator",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["silicone", "caulk_gun", "smoothing_tools"],
+          "prerequisites": ["sink_cutout"]
+        }
+      ],
+      "materials": [
+        {
+          "item": "Granite Countertops",
+          "category": "countertops",
+          "unit": "square_foot",
+          "quantity_calculation": "countertop_square_footage",
+          "unit_cost_base": 65,
+          "waste_factor": 0.15,
+          "condition": "if_granite_selected",
+          "notes": "Includes fabrication and installation"
+        },
+        {
+          "item": "Quartz Countertops",
+          "category": "countertops",
+          "unit": "square_foot",
+          "quantity_calculation": "countertop_square_footage", 
+          "unit_cost_base": 75,
+          "waste_factor": 0.1,
+          "condition": "if_quartz_selected"
+        },
+        {
+          "item": "Laminate Countertops",
+          "category": "countertops",
+          "unit": "square_foot",
+          "quantity_calculation": "countertop_square_footage",
+          "unit_cost_base": 25,
+          "waste_factor": 0.1,
+          "condition": "if_laminate_selected"
+        },
+        {
+          "item": "Undermount Kitchen Sink",
+          "category": "plumbing_fixtures",
+          "unit": "each",
+          "quantity": 1,
+          "unit_cost_base": 350,
+          "waste_factor": 0,
+          "condition": "if_sink_included"
+        },
+        {
+          "item": "Countertop Support Brackets",
+          "category": "countertops",
+          "unit": "each",
+          "quantity": 4,
+          "unit_cost_base": 25,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Silicone Sealant",
+          "category": "consumables",
+          "unit": "tube",
+          "quantity": 3,
+          "unit_cost_base": 8,
+          "waste_factor": 0.1
+        }
+      ]
+    },
+
+    {
+      "phase_id": "phase_9", 
+      "phase_name": "Backsplash Installation",
+      "sequence": 9,
+      "duration_days": "2-3",
+      "tasks": [
+        {
+          "task_id": "backsplash_layout",
+          "task": "Layout backsplash pattern and mark cuts",
+          "labor_hours": 3,
+          "skill_level": "tile_installer",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["chalk_line", "level", "measuring_tape"],
+          "prerequisites": ["countertop_sealing"]
+        },
+        {
+          "task_id": "backsplash_prep",
+          "task": "Prepare wall surface and apply primer",
+          "labor_hours": 2,
+          "skill_level": "tile_installer",
+          "hourly_rate_category": "skilled", 
+          "tools_required": ["sandpaper", "primer", "brushes"],
+          "prerequisites": ["backsplash_layout"]
+        },
+        {
+          "task_id": "tile_installation",
+          "task": "Install backsplash tiles",
+          "labor_hours": 8,
+          "skill_level": "tile_installer",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["tile_saw", "trowel", "spacers", "level"],
+          "prerequisites": ["backsplash_prep"]
+        },
+        {
+          "task_id": "tile_cutting",
+          "task": "Cut tiles around outlets and edges",
+          "labor_hours": 3,
+          "skill_level": "tile_installer", 
+          "hourly_rate_category": "skilled",
+          "tools_required": ["wet_saw", "tile_nippers", "files"],
+          "prerequisites": ["tile_installation"]
+        },
+        {
+          "task_id": "grout_application",
+          "task": "Apply grout and clean excess",
+          "labor_hours": 4,
+          "skill_level": "tile_installer",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["grout_float", "sponges", "buckets"],
+          "prerequisites": ["tile_cutting"]
+        },
+        {
+          "task_id": "grout_sealing",
+          "task": "Seal grout lines and clean tiles",
+          "labor_hours": 2,
+          "skill_level": "tile_installer",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["grout_sealer", "applicator", "clean_cloths"],
+          "prerequisites": ["grout_application"]
+        }
+      ],
+      "materials": [
+        {
+          "item": "Subway Tile 3x6",
+          "category": "tile",
+          "unit": "square_foot",
+          "quantity_calculation": "backsplash_square_footage", 
+          "unit_cost_base": 4.50,
+          "waste_factor": 0.15,
+          "condition": "if_subway_tile_selected"
+        },
+        {
+          "item": "Natural Stone Tile",
+          "category": "tile",
+          "unit": "square_foot",
+          "quantity_calculation": "backsplash_square_footage",
+          "unit_cost_base": 12.50,
+          "waste_factor": 0.2,
+          "condition": "if_stone_tile_selected"
+        },
+        {
+          "item": "Mosaic Tile",
+          "category": "tile",
+          "unit": "square_foot",
+          "quantity_calculation": "backsplash_square_footage",
+          "unit_cost_base": 8.75,
+          "waste_factor": 0.15,
+          "condition": "if_mosaic_selected"
+        },
+        {
+          "item": "Tile Adhesive",
+          "category": "tile",
+          "unit": "bucket",
+          "quantity": 2,
+          "unit_cost_base": 35,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Tile Grout",
+          "category": "tile",
+          "unit": "bag",
+          "quantity": 3,
+          "unit_cost_base": 18,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Grout Sealer",
+          "category": "tile", 
+          "unit": "bottle",
+          "quantity": 2,
+          "unit_cost_base": 15,
+          "waste_factor": 0.05
+        },
+        {
+          "item": "Tile Spacers",
+          "category": "tile",
+          "unit": "bag",
+          "quantity": 2,
+          "unit_cost_base": 12,
+          "waste_factor": 0.1
+        }
+      ]
+    },
+
+    {
+      "phase_id": "phase_10",
+      "phase_name": "Final Electrical & Plumbing",
+      "sequence": 10,
+      "duration_days": "1-2",
+      "tasks": [
+        {
+          "task_id": "light_fixture_install",
+          "task": "Install pendant lights and under-cabinet lighting",
+          "labor_hours": 6,
+          "skill_level": "electrician", 
+          "hourly_rate_category": "skilled",
+          "tools_required": ["wire_nuts", "drill", "multimeter"],
+          "prerequisites": ["grout_sealing"]
+        },
+        {
+          "task_id": "outlet_switch_install",
+          "task": "Install outlets, switches, and cover plates",
+          "labor_hours": 4,
+          "skill_level": "electrician",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["screwdrivers", "wire_strippers", "voltage_tester"],
+          "prerequisites": ["light_fixture_install"]
+        },
+        {
+          "task_id": "faucet_installation",
+          "task": "Install kitchen faucet and connect supply lines",
+          "labor_hours": 3,
+          "skill_level": "plumber",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["basin_wrench", "teflon_tape", "pipe_wrench"],
+          "prerequisites": ["grout_sealing"]
+        },
+        {
+          "task_id": "appliance_connections", 
+          "task": "Connect dishwasher, disposal, and other appliances",
+          "labor_hours": 4,
+          "skill_level": "plumber",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["pipe_wrench", "electrical_connectors"],
+          "prerequisites": ["faucet_installation"]
+        },
+        {
+          "task_id": "final_electrical_test",
+          "task": "Test all electrical circuits and connections",
+          "labor_hours": 2,
+          "skill_level": "electrician",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["multimeter", "circuit_tester"],
+          "prerequisites": ["outlet_switch_install"]
+        },
+        {
+          "task_id": "final_plumbing_test",
+          "task": "Test all plumbing connections for leaks",
+          "labor_hours": 2,
+          "skill_level": "plumber",
+          "hourly_rate_category": "skilled", 
+          "tools_required": ["pressure_gauge", "leak_detector"],
+          "prerequisites": ["appliance_connections"]
+        }
+      ],
+      "materials": [
+        {
+          "item": "Pendant Light Fixtures",
+          "category": "electrical_fixtures",
+          "unit": "each",
+          "quantity": 3,
+          "unit_cost_base": 125,
+          "waste_factor": 0
+        },
+        {
+          "item": "Under-Cabinet LED Strips",
+          "category": "electrical_fixtures", 
+          "unit": "linear_foot",
+          "quantity": 15,
+          "unit_cost_base": 8,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Electrical Outlets GFCI",
+          "category": "electrical_fixtures",
+          "unit": "each",
+          "quantity": 6,
+          "unit_cost_base": 18,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Light Switches Dimmer",
+          "category": "electrical_fixtures",
+          "unit": "each", 
+          "quantity": 3,
+          "unit_cost_base": 35,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Kitchen Faucet with Sprayer",
+          "category": "plumbing_fixtures",
+          "unit": "each",
+          "quantity": 1,
+          "unit_cost_base": 285,
+          "waste_factor": 0
+        },
+        {
+          "item": "Garbage Disposal",
+          "category": "plumbing_fixtures",
+          "unit": "each",
+          "quantity": 1,
+          "unit_cost_base": 185,
+          "waste_factor": 0,
+          "condition": "if_disposal_included"
+        },
+        {
+          "item": "Electrical Cover Plates",
+          "category": "electrical_fixtures",
+          "unit": "each",
+          "quantity": 10,
+          "unit_cost_base": 3,
+          "waste_factor": 0.1
+        }
+      ]
+    },
+
+    {
+      "phase_id": "phase_11",
+      "phase_name": "Painting",
+      "sequence": 11,
+      "duration_days": "2-3",
+      "tasks": [
+        {
+          "task_id": "paint_prep",
+          "task": "Protect surfaces and prep for painting",
+          "labor_hours": 4,
+          "skill_level": "painter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["drop_cloths", "tape", "plastic_sheeting"],
+          "prerequisites": ["final_electrical_test", "final_plumbing_test"]
+        },
+        {
+          "task_id": "wall_prep_painting",
+          "task": "Fill holes, sand, and prime walls",
+          "labor_hours": 6,
+          "skill_level": "painter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["sandpaper", "putty_knife", "primer"],
+          "prerequisites": ["paint_prep"]
+        },
+        {
+          "task_id": "ceiling_painting",
+          "task": "Paint ceiling (if included in scope)",
+          "labor_hours": 4,
+          "skill_level": "painter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["extension_pole", "rollers", "brushes"],
+          "prerequisites": ["wall_prep_painting"],
+          "condition": "if_ceiling_painting_included"
+        },
+        {
+          "task_id": "wall_painting_first_coat",
+          "task": "Apply first coat of wall paint",
+          "labor_hours": 5,
+          "skill_level": "painter", 
+          "hourly_rate_category": "skilled",
+          "tools_required": ["brushes", "rollers", "paint_trays"],
+          "prerequisites": ["ceiling_painting"]
+        },
+        {
+          "task_id": "wall_painting_second_coat",
+          "task": "Apply second coat of wall paint",
+          "labor_hours": 4,
+          "skill_level": "painter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["brushes", "rollers", "paint_trays"],
+          "prerequisites": ["wall_painting_first_coat"]
+        },
+        {
+          "task_id": "trim_painting",
+          "task": "Paint trim, doors, and cabinet touch-ups",
+          "labor_hours": 6,
+          "skill_level": "painter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["angled_brushes", "fine_sandpaper"],
+          "prerequisites": ["wall_painting_second_coat"]
+        },
+        {
+          "task_id": "paint_cleanup",
+          "task": "Remove tape, clean brushes, final inspection",
+          "labor_hours": 2,
+          "skill_level": "painter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["cleanup_materials"],
+          "prerequisites": ["trim_painting"]
+        }
+      ],
+      "materials": [
+        {
+          "item": "Interior Wall Paint Premium",
+          "category": "paint",
+          "unit": "gallon", 
+          "quantity": 3,
+          "unit_cost_base": 65,
+          "waste_factor": 0.1,
+          "notes": "Coverage depends on surface texture and color change"
+        },
+        {
+          "item": "Ceiling Paint",
+          "category": "paint",
+          "unit": "gallon",
+          "quantity": 1,
+          "unit_cost_base": 45,
+          "waste_factor": 0.05,
+          "condition": "if_ceiling_painting_included"
+        },
+        {
+          "item": "Trim Paint Semi-Gloss",
+          "category": "paint",
+          "unit": "quart",
+          "quantity": 2,
+          "unit_cost_base": 25,
+          "waste_factor": 0.1
+        },
+        {
+          "item": "Primer Sealer",
+          "category": "paint",
+          "unit": "gallon",
+          "quantity": 2,
+          "unit_cost_base": 40,
+          "waste_factor": 0.05
+        },
+        {
+          "item": "Painting Supplies",
+          "category": "consumables",
+          "unit": "per_job",
+          "quantity": 1,
+          "unit_cost_base": 125,
+          "waste_factor": 0,
+          "notes": "Brushes, rollers, trays, tape, drop cloths"
+        }
+      ]
+    },
+
+    {
+      "phase_id": "phase_12", 
+      "phase_name": "Final Installation & Appliances",
+      "sequence": 12,
+      "duration_days": "1-2",
+      "tasks": [
+        {
+          "task_id": "appliance_delivery",
+          "task": "Coordinate and receive appliance deliveries",
+          "labor_hours": 3,
+          "skill_level": "contractor",
+          "hourly_rate_category": "management",
+          "tools_required": ["dolly", "appliance_straps"],
+          "prerequisites": ["paint_cleanup"]
+        },
+        {
+          "task_id": "appliance_installation",
+          "task": "Install and connect all appliances",
+          "labor_hours": 8,
+          "skill_level": "appliance_technician",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["basic_tools", "level", "connections"],
+          "prerequisites": ["appliance_delivery"]
+        },
+        {
+          "task_id": "cabinet_adjustments",
+          "task": "Final cabinet door and drawer adjustments",
+          "labor_hours": 3,
+          "skill_level": "carpenter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["screwdrivers", "hinges"],
+          "prerequisites": ["appliance_installation"]
+        },
+        {
+          "task_id": "hardware_final_install",
+          "task": "Install remaining hardware and accessories",
+          "labor_hours": 2,
+          "skill_level": "carpenter",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["drill", "screwdrivers"],
+          "prerequisites": ["cabinet_adjustments"]
+        },
+        {
+          "task_id": "functionality_testing",
+          "task": "Test all appliances and systems",
+          "labor_hours": 2,
+          "skill_level": "contractor", 
+          "hourly_rate_category": "management",
+          "tools_required": ["multimeter", "test_equipment"],
+          "prerequisites": ["hardware_final_install"]
+        }
+      ],
+      "materials": [
+        {
+          "item": "Refrigerator",
+          "category": "appliances",
+          "unit": "each",
+          "quantity": 1,
+          "unit_cost_base": 1200,
+          "waste_factor": 0,
+          "condition": "if_appliance_package_included",
+          "notes": "Wide price range based on features and brand"
+        },
+        {
+          "item": "Range/Cooktop", 
+          "category": "appliances",
+          "unit": "each",
+          "quantity": 1,
+          "unit_cost_base": 850,
+          "waste_factor": 0,
+          "condition": "if_appliance_package_included"
+        },
+        {
+          "item": "Dishwasher",
+          "category": "appliances",
+          "unit": "each",
+          "quantity": 1,
+          "unit_cost_base": 650,
+          "waste_factor": 0,
+          "condition": "if_appliance_package_included"
+        },
+        {
+          "item": "Range Hood/Microwave",
+          "category": "appliances",
+          "unit": "each",
+          "quantity": 1,
+          "unit_cost_base": 400,
+          "waste_factor": 0,
+          "condition": "if_appliance_package_included"
+        },
+        {
+          "item": "Cabinet Accessories",
+          "category": "cabinetry",
+          "unit": "per_job",
+          "quantity": 1,
+          "unit_cost_base": 85,
+          "waste_factor": 0,
+          "notes": "Lazy susans, drawer organizers, etc."
+        }
+      ]
+    },
+
+    {
+      "phase_id": "phase_13",
+      "phase_name": "Cleaning & Final Inspection",
+      "sequence": 13,
+      "duration_days": "1",
+      "tasks": [
+        {
+          "task_id": "construction_cleanup",
+          "task": "Remove all debris and construction materials",
+          "labor_hours": 4,
+          "skill_level": "helper",
+          "hourly_rate_category": "helper",
+          "tools_required": ["vacuum", "brooms", "trash_bags"],
+          "prerequisites": ["functionality_testing"]
+        },
+        {
+          "task_id": "deep_cleaning",
+          "task": "Professional deep cleaning of entire kitchen",
+          "labor_hours": 6,
+          "skill_level": "cleaning_professional",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["cleaning_supplies", "equipment"],
+          "prerequisites": ["construction_cleanup"]
+        },
+        {
+          "task_id": "final_walkthrough",
+          "task": "Final inspection and punch list creation",
+          "labor_hours": 2,
+          "skill_level": "contractor",
+          "hourly_rate_category": "management",
+          "tools_required": ["checklist", "camera"],
+          "prerequisites": ["deep_cleaning"]
+        },
+        {
+          "task_id": "punch_list_completion",
+          "task": "Complete punch list items and touch-ups",
+          "labor_hours": 4,
+          "skill_level": "skilled_tradesman",
+          "hourly_rate_category": "skilled",
+          "tools_required": ["various_tools"],
+          "prerequisites": ["final_walkthrough"]
+        },
+        {
+          "task_id": "client_demonstration",
+          "task": "Demonstrate appliances and systems to client",
+          "labor_hours": 1,
+          "skill_level": "contractor", 
+          "hourly_rate_category": "management",
+          "tools_required": ["manuals", "demonstration_materials"],
+          "prerequisites": ["punch_list_completion"]
+        },
+        {
+          "task_id": "warranty_documentation",
+          "task": "Provide warranty documentation and care instructions",
+          "labor_hours": 1,
+          "skill_level": "contractor",
+          "hourly_rate_category": "management", 
+          "tools_required": ["documentation_packet"],
+          "prerequisites": ["client_demonstration"]
+        }
+      ],
+      "materials": [
+        {
+          "item": "Professional Cleaning Service",
+          "category": "services",
+          "unit": "per_job",
+          "quantity": 1,
+          "unit_cost_base": 350,
+          "waste_factor": 0
+        },
+        {
+          "item": "Touch-up Materials",
+          "category": "consumables",
+          "unit": "per_job",
+          "quantity": 1,
+          "unit_cost_base": 75,
+          "waste_factor": 0,
+          "notes": "Paint, caulk, hardware adjustments"
+        },
+        {
+          "item": "Final Cleaning Supplies",
+          "category": "consumables",
+          "unit": "per_job",
+          "quantity": 1,
+          "unit_cost_base": 45,
+          "waste_factor": 0
+        }
+      ]
+    }
+  ],
+
+  "labor_rates": {
+    "management": {"min": 75, "max": 120, "typical": 95},
+    "skilled": {"min": 45, "max": 85, "typical": 65},
+    "helper": {"min": 25, "max": 40, "typical": 32}
+  },
+
+  "sizing_factors": {
+    "kitchen_size": {
+      "small": {
+        "square_footage": "80-120", 
+        "linear_footage": "15-20",
+        "complexity_multiplier": 1.0,
+        "description": "Galley or small L-shaped kitchen"
+      },
+      "medium": {
+        "square_footage": "121-180",
+        "linear_footage": "21-30", 
+        "complexity_multiplier": 1.3,
+        "description": "Standard kitchen with island possibility"
+      },
+      "large": {
+        "square_footage": "181-250",
+        "linear_footage": "31-40",
+        "complexity_multiplier": 1.6, 
+        "description": "Large kitchen with island and pantry"
+      },
+      "xl": {
+        "square_footage": "250+",
+        "linear_footage": "40+",
+        "complexity_multiplier": 2.0,
+        "description": "Luxury kitchen with multiple islands"
+      }
+    },
+
+    "renovation_scope": {
+      "cosmetic": {
+        "description": "Cabinet reface, countertops, backsplash, paint",
+        "phases_included": ["phase_1", "phase_2", "phase_8", "phase_9", "phase_11", "phase_13"],
+        "complexity_multiplier": 0.4
+      },
+      "standard": {
+        "description": "New cabinets, appliances, some electrical/plumbing",
+        "phases_included": ["phase_1", "phase_2", "phase_3", "phase_4", "phase_6", "phase_7", "phase_8", "phase_9", "phase_10", "phase_11", "phase_12", "phase_13"],
+        "complexity_multiplier": 1.0
+      },
+      "gut_renovation": {
+        "description": "Complete teardown and rebuild",
+        "phases_included": "all",
+        "complexity_multiplier": 1.5
+      }
+    }
+  },
+
+  "common_complications": [
+    {
+      "complication_id": "structural_issues",
+      "issue": "Structural problems discovered during demolition",
+      "likelihood": "medium",
+      "additional_hours": 16,
+      "additional_material_cost": 1200,
+      "requires_trades": ["structural_engineer", "carpenter"],
+      "notes": "May require permits and engineering approval"
+    },
+    {
+      "complication_id": "electrical_panel_upgrade",
+      "issue": "Electrical panel requires upgrade for new load",
+      "likelihood": "high",
+      "additional_hours": 12,
+      "additional_material_cost": 1800,
+      "requires_trades": ["electrician"],
+      "notes": "Common in homes over 20 years old"
+    },
+    {
+      "complication_id": "plumbing_code_violations",
+      "issue": "Existing plumbing not up to current code",
+      "likelihood": "medium", 
+      "additional_hours": 8,
+      "additional_material_cost": 850,
+      "requires_trades": ["plumber"],
+      "notes": "Must be brought to code during renovation"
+    },
+    {
+      "complication_id": "asbestos_discovery",
+      "issue": "Asbestos found in flooring or drywall",
+      "likelihood": "low",
+      "additional_hours": 0,
+      "additional_material_cost": 2500,
+      "requires_trades": ["hazmat_specialist"],
+      "notes": "Requires professional abatement, significant delays"
+    },
+    {
+      "complication_id": "permit_delays",
+      "issue": "Permit approval delays or requirement changes",
+      "likelihood": "medium",
+      "additional_hours": 0,
+      "additional_material_cost": 0,
+      "timeline_delay_days": 7,
+      "notes": "Can add 1-3 weeks to project timeline"
+    },
+    {
+      "complication_id": "material_delivery_delays",
+      "issue": "Custom materials delayed or damaged in shipping",
+      "likelihood": "medium",
+      "additional_hours": 0,
+      "additional_material_cost": 0,
+      "timeline_delay_days": 5,
+      "notes": "Countertops and custom cabinets most susceptible"
+    },
+    {
+      "complication_id": "hvac_ductwork_conflicts",
+      "issue": "HVAC ducts interfere with new layout",
+      "likelihood": "low",
+      "additional_hours": 12,
+      "additional_material_cost": 650,
+      "requires_trades": ["hvac_technician"],
+      "notes": "May require ductwork rerouting"
+    },
+    {
+      "complication_id": "floor_level_issues",
+      "issue": "Subfloor not level, requires extensive prep",
+      "likelihood": "medium",
+      "additional_hours": 8,
+      "additional_material_cost": 400,
+      "requires_trades": ["flooring_installer"],
+      "notes": "More common in older homes"
+    }
+  ],
+
+  "calculation_methods": {
+    "kitchen_square_footage": {
+      "method": "length_x_width",
+      "notes": "Measure interior dimensions of kitchen space"
+    },
+    "countertop_square_footage": {
+      "method": "perimeter_calculation", 
+      "formula": "linear_feet * average_depth + island_area",
+      "typical_depth": 25.5,
+      "notes": "Include overhang and island areas"
+    },
+    "backsplash_square_footage": {
+      "method": "wall_area_calculation",
+      "formula": "perimeter * height - window_door_area",
+      "typical_height": 18,
+      "notes": "Measure from counter to upper cabinets"
+    },
+    "base_cabinet_linear_feet": {
+      "method": "wall_measurement",
+      "notes": "Measure along wall where base cabinets will be installed"
+    },
+    "upper_cabinet_linear_feet": {
+      "method": "wall_measurement", 
+      "notes": "Usually 70-80% of base cabinet linear footage"
+    }
+  },
+
+  "regional_variations": {
+    "permit_requirements": {
+      "varies_by": "jurisdiction",
+      "notes": "City and county requirements differ significantly"
+    },
+    "labor_rates": {
+      "varies_by": "geographic_region",
+      "notes": "Urban areas typically 20-40% higher than rural"
+    },
+    "material_costs": {
+      "varies_by": "regional_suppliers",
+      "notes": "Transportation costs affect remote areas"
+    },
+    "code_requirements": {
+      "varies_by": "local_jurisdiction", 
+      "notes": "Electrical and plumbing codes have local variations"
+    }
+  },
+
+  "quality_tiers": {
+    "budget": {
+      "description": "Basic materials and finishes",
+      "material_multiplier": 0.7,
+      "cabinet_cost_per_lf": 150,
+      "countertop_cost_per_sf": 35,
+      "appliance_package": 2500
+    },
+    "mid_range": {
+      "description": "Good quality materials and finishes",
+      "material_multiplier": 1.0,
+      "cabinet_cost_per_lf": 250,
+      "countertop_cost_per_sf": 65,
+      "appliance_package": 4500
+    },
+    "high_end": {
+      "description": "Premium materials and custom features",
+      "material_multiplier": 1.8,
+      "cabinet_cost_per_lf": 450,
+      "countertop_cost_per_sf": 95,
+      "appliance_package": 8500
+    },
+    "luxury": {
+      "description": "Luxury materials and full customization", 
+      "material_multiplier": 2.5,
+      "cabinet_cost_per_lf": 650,
+      "countertop_cost_per_sf": 125,
+      "appliance_package": 15000
+    }
+  },
+
+  "timeline_dependencies": {
+    "critical_path": [
+      "permits → demolition → rough_in → inspection → drywall → flooring → cabinets → countertops → backsplash → final_connections → cleanup"
+    ],
+    "lead_times": {
+      "permits": "1-3 weeks",
+      "custom_cabinets": "4-8 weeks",
+      "countertop_fabrication": "1-2 weeks",
+      "appliance_delivery": "2-4 weeks",
+      "specialty_flooring": "2-3 weeks"
+    },
+    "weather_dependencies": [
+      "dumpster_placement",
+      "material_deliveries"
+    ],
+    "inspection_requirements": {
+      "rough_electrical": "required_before_drywall",
+      "rough_plumbing": "required_before_drywall", 
+      "final_electrical": "required_before_occupancy",
+      "final_plumbing": "required_before_occupancy"
+    }
+  }
+}

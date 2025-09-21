@@ -563,7 +563,8 @@ class WorkflowEngine {
     /**
      * Organize tasks into logical phases
      */
-    organizeTasks intoPhases(tasks) {
+    organizeTasksIntoPhases(tasks) {
+
         const phases = {
             'Planning': tasks.filter(t => t.category === 'planning'),
             'Site Work': tasks.filter(t => t.category === 'sitework'),

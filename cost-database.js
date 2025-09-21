@@ -10,6 +10,14 @@ class CostDatabase {
     }
 
     /**
+     * Initialize the cost database
+     */
+    async initialize() {
+        console.log('🔧 Initializing Cost Database...');
+        return true;
+    }
+
+    /**
      * Initialize base construction costs (national averages)
      */
     initializeBaseCosts() {

@@ -11,6 +11,15 @@ class ConstructionProjectAnalyzer {
     }
 
     /**
+     * Initialize the analyzer and its components
+     */
+    async initialize() {
+        console.log('🔧 Initializing Construction Project Analyzer...');
+        // Components are already initialized in constructor
+        return true;
+    }
+
+    /**
      * Main API endpoint: Analyze construction project description
      * @param {string} projectDescription - Natural language project description
      * @param {Object} options - Analysis options (location, timeline, etc.)

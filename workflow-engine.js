@@ -7,6 +7,14 @@ class WorkflowEngine {
     }
 
     /**
+     * Initialize the workflow engine
+     */
+    async initialize() {
+        console.log('🔧 Initializing Workflow Engine...');
+        return true;
+    }
+
+    /**
      * Generate workflow sequence for a construction project
      * @param {Object} projectData - Parsed project data
      * @returns {Object} Complete workflow with tasks, dependencies, and timeline

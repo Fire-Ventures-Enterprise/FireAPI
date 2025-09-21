@@ -2505,3 +2505,6 @@ if ('PerformanceObserver' in window) {
 // Debug: Verify main.js loaded completely
 console.log('✅ main.js loaded successfully');
 console.log('🔧 analyzeProject function available:', typeof analyzeProject === 'function');
+
+// Add missing closing brace
+}

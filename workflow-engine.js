@@ -39,7 +39,8 @@ class WorkflowEngine {
                 optimizedDuration: timeline.optimizedDuration,
                 parallelTasks: timeline.parallelGroups,
                 criticalPath: timeline.criticalPath,
-                phases: this.organizeTasks intoPhases(tasksWithDurations)
+                phases: this.organizeTasksIntoPhases(tasksWithDurations)
+
             };
             
         } catch (error) {

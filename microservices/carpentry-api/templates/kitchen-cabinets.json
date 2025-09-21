@@ -99,26 +99,20 @@
         {
           "item": "Upper Cabinet Boxes",
           "unit": "linear_foot",
-          "cost_per_unit": {
-            "budget": 85,
-            "mid_range": 120,
-            "high_end": 180,
-            "luxury": 280
-          },
+          "category": "cabinetry",
+          "specification": "Standard upper cabinet boxes with adjustable shelves",
           "calculation": "upper_cabinet_linear_feet",
-          "waste_factor": 0.05
+          "waste_factor": 0.05,
+          "pricing_required": true
         },
         {
           "item": "Base Cabinet Boxes",
-          "unit": "linear_foot", 
-          "cost_per_unit": {
-            "budget": 110,
-            "mid_range": 180,
-            "high_end": 250,
-            "luxury": 380
-          },
+          "unit": "linear_foot",
+          "category": "cabinetry", 
+          "specification": "Standard base cabinet boxes with adjustable shelves",
           "calculation": "base_cabinet_linear_feet",
-          "waste_factor": 0.05
+          "waste_factor": 0.05,
+          "pricing_required": true
         }
       ]
     },
@@ -128,26 +122,20 @@
         {
           "item": "Cabinet Doors",
           "unit": "each",
-          "cost_per_unit": {
-            "budget": 35,
-            "mid_range": 65,
-            "high_end": 120,
-            "luxury": 200
-          },
+          "category": "cabinetry",
+          "specification": "Cabinet doors with quality finish",
           "calculation": "door_count_from_linear_feet",
-          "waste_factor": 0.02
+          "waste_factor": 0.02,
+          "pricing_required": true
         },
         {
           "item": "Drawer Faces",
           "unit": "each",
-          "cost_per_unit": {
-            "budget": 25,
-            "mid_range": 45,
-            "high_end": 85,
-            "luxury": 150
-          },
+          "category": "cabinetry",
+          "specification": "Drawer fronts to match cabinet doors",
           "calculation": "drawer_count_from_linear_feet",
-          "waste_factor": 0.02
+          "waste_factor": 0.02,
+          "pricing_required": true
         }
       ]
     },
@@ -157,38 +145,29 @@
         {
           "item": "Cabinet Hinges",
           "unit": "each",
-          "cost_per_unit": {
-            "budget": 3.50,
-            "mid_range": 6.50,
-            "high_end": 12.00,
-            "luxury": 25.00
-          },
+          "category": "hardware",
+          "specification": "Cabinet door hinges, standard or soft-close",
           "calculation": "door_count * 2",
-          "waste_factor": 0.1
+          "waste_factor": 0.1,
+          "pricing_required": true
         },
         {
           "item": "Drawer Slides",
           "unit": "pair",
-          "cost_per_unit": {
-            "budget": 8,
-            "mid_range": 18,
-            "high_end": 35,
-            "luxury": 65
-          },
+          "category": "hardware",
+          "specification": "Drawer slides, standard or soft-close",
           "calculation": "drawer_count",
-          "waste_factor": 0.05
+          "waste_factor": 0.05,
+          "pricing_required": true
         },
         {
           "item": "Pulls and Knobs",
           "unit": "each",
-          "cost_per_unit": {
-            "budget": 4,
-            "mid_range": 12,
-            "high_end": 25,
-            "luxury": 50
-          },
+          "category": "hardware",
+          "specification": "Cabinet door handles and drawer pulls",
           "calculation": "door_count + drawer_count", 
-          "waste_factor": 0.05
+          "waste_factor": 0.05,
+          "pricing_required": true
         }
       ]
     },
@@ -198,27 +177,21 @@
         {
           "item": "Crown Molding",
           "unit": "linear_foot",
-          "cost_per_unit": {
-            "budget": 5.50,
-            "mid_range": 8.50,
-            "high_end": 15.00,
-            "luxury": 28.00
-          },
+          "category": "trim",
+          "specification": "Kitchen crown molding with appropriate profile",
           "calculation": "upper_cabinet_linear_feet",
           "waste_factor": 0.15,
-          "condition": "if_crown_molding_specified"
+          "condition": "if_crown_molding_specified",
+          "pricing_required": true
         },
         {
           "item": "Toe Kick Material",
           "unit": "linear_foot",
-          "cost_per_unit": {
-            "budget": 3.50,
-            "mid_range": 5.50,
-            "high_end": 8.50,
-            "luxury": 15.00
-          },
+          "category": "trim",
+          "specification": "Toe kick boards for base cabinets",
           "calculation": "base_cabinet_linear_feet",
-          "waste_factor": 0.1
+          "waste_factor": 0.1,
+          "pricing_required": true
         }
       ]
     },
@@ -228,40 +201,46 @@
         {
           "item": "Cabinet Screws 2.5\"",
           "unit": "box_100",
-          "cost_per_unit": 15,
+          "category": "fasteners",
+          "specification": "Cabinet mounting screws, 2.5 inch length",
           "calculation": "linear_feet / 10",
-          "waste_factor": 0
+          "waste_factor": 0,
+          "pricing_required": true
         },
         {
           "item": "Shims",
           "unit": "bundle",
-          "cost_per_unit": 8,
+          "category": "installation_supplies",
+          "specification": "Wood shims for cabinet leveling",
           "calculation": "linear_feet / 8", 
-          "waste_factor": 0
+          "waste_factor": 0,
+          "pricing_required": true
         },
         {
           "item": "Wood Glue",
           "unit": "bottle",
-          "cost_per_unit": 12,
+          "category": "installation_supplies",
+          "specification": "Wood adhesive for cabinet installation",
           "calculation": "1_per_job",
-          "waste_factor": 0
+          "waste_factor": 0,
+          "pricing_required": true
         }
       ]
     }
   ],
 
-  "labor_rates": {
+  "labor_requirements": {
     "carpenter": {
-      "min": 55,
-      "typical": 65,
-      "max": 85,
-      "description": "Skilled cabinet installer"
+      "skill_level": "skilled",
+      "description": "Experienced cabinet installer",
+      "certification_required": false,
+      "pricing_required": true
     },
     "helper": {
-      "min": 25,
-      "typical": 32,
-      "max": 40,
-      "description": "General construction helper"
+      "skill_level": "entry_level",
+      "description": "General construction helper",
+      "certification_required": false,
+      "pricing_required": true
     }
   },
 
@@ -315,26 +294,30 @@
     }
   ],
 
-  "quality_tiers": {
+  "quality_specifications": {
     "budget": {
       "description": "Basic thermofoil or laminate cabinets",
-      "material_multiplier": 0.7,
-      "typical_brands": ["Home Depot", "Lowes", "IKEA"]
+      "material_grade": "standard",
+      "typical_suppliers": ["Home improvement stores", "Ready-to-assemble"],
+      "pricing_category": "economy"
     },
     "mid_range": {
       "description": "Quality wood cabinets with standard features",
-      "material_multiplier": 1.0,
-      "typical_brands": ["KraftMaid", "Merillat", "American Woodmark"]
+      "material_grade": "select",
+      "typical_suppliers": ["National cabinet manufacturers"],
+      "pricing_category": "standard"
     },
     "high_end": {
       "description": "Premium wood with soft-close and custom features",
-      "material_multiplier": 1.8,
-      "typical_brands": ["Wellborn", "Crystal Cabinets", "Yorktowne"]
+      "material_grade": "premium",
+      "typical_suppliers": ["Premium cabinet manufacturers"],
+      "pricing_category": "premium"
     },
     "luxury": {
       "description": "Custom millwork with premium materials",
-      "material_multiplier": 2.5,
-      "typical_brands": ["Custom Shop", "SieMatic", "Poggenpohl"]
+      "material_grade": "custom",
+      "typical_suppliers": ["Custom cabinet shops", "High-end manufacturers"],
+      "pricing_category": "luxury"
     }
   },
 

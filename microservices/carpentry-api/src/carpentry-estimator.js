@@ -136,32 +136,35 @@ class CarpentryEstimator {
     generateCabinetMaterials(type, linearFootage, cabinetScope) {
         const materials = [];
         
-        // Base cabinet materials
+        // Base cabinet materials - NO PRICING DATA
         if (type === 'lower') {
             materials.push({
                 item: 'Base Cabinet Boxes',
                 quantity: Math.ceil(linearFootage / 3), // 3 feet per cabinet average
                 unit: 'each',
-                unit_cost: 180,
-                total_cost: Math.ceil(linearFootage / 3) * 180
+                category: 'cabinetry',
+                specification: 'Standard base cabinet box with adjustable shelves',
+                pricing_required: true
             });
         } else if (type === 'upper') {
             materials.push({
                 item: 'Upper Cabinet Boxes',
                 quantity: Math.ceil(linearFootage / 2.5), // 2.5 feet per cabinet average  
                 unit: 'each',
-                unit_cost: 120,
-                total_cost: Math.ceil(linearFootage / 2.5) * 120
+                category: 'cabinetry',
+                specification: 'Standard upper cabinet box with adjustable shelves',
+                pricing_required: true
             });
         }
 
-        // Cabinet doors and faces
+        // Cabinet doors and faces - NO PRICING DATA
         materials.push({
             item: `${type === 'upper' ? 'Upper' : 'Base'} Cabinet Doors`,
             quantity: Math.ceil(linearFootage * 1.2), // More doors than linear feet
             unit: 'each',
-            unit_cost: type === 'upper' ? 45 : 65,
-            total_cost: Math.ceil(linearFootage * 1.2) * (type === 'upper' ? 45 : 65)
+            category: 'cabinetry',
+            specification: `${type === 'upper' ? 'Upper' : 'Base'} cabinet doors with hinges`,
+            pricing_required: true
         });
 
         return materials;
@@ -175,15 +178,17 @@ class CarpentryEstimator {
                 item: 'Cabinet Hinges',
                 quantity: totalDoors * 2,
                 unit: 'each',
-                unit_cost: cabinetScope.softClose ? 8 : 3.50,
-                total_cost: totalDoors * 2 * (cabinetScope.softClose ? 8 : 3.50)
+                category: 'hardware',
+                specification: cabinetScope.softClose ? 'Soft-close cabinet hinges' : 'Standard cabinet hinges',
+                pricing_required: true
             },
             {
                 item: 'Cabinet Pulls/Knobs',
                 quantity: totalDoors + Math.ceil(linearFootage * 0.5), // Drawers
-                unit: 'each', 
-                unit_cost: 12,
-                total_cost: (totalDoors + Math.ceil(linearFootage * 0.5)) * 12
+                unit: 'each',
+                category: 'hardware',
+                specification: 'Cabinet door handles and drawer pulls',
+                pricing_required: true
             }
         ];
     }
@@ -192,53 +197,45 @@ class CarpentryEstimator {
         return [
             {
                 item: 'Crown Molding',
-                quantity: linearFootage,
+                quantity: Math.ceil(linearFootage * 1.15), // Include 15% waste factor in quantity
                 unit: 'linear_foot',
-                unit_cost: 8.50,
-                total_cost: linearFootage * 8.50 * 1.15 // 15% waste factor
+                category: 'trim',
+                specification: 'Kitchen crown molding with appropriate profile',
+                pricing_required: true
             },
             {
                 item: 'Molding Installation Hardware',
                 quantity: 1,
                 unit: 'lot',
-                unit_cost: 45,
-                total_cost: 45
+                category: 'fasteners',
+                specification: 'Crown molding nails, screws, and mounting hardware',
+                pricing_required: true
             }
         ];
     }
 
     calculateCabinetCosts(phases, qualityTier, linearFootage) {
         let totalHours = 0;
-        let materialCost = 0;
+        const materialList = [];
 
-        // Sum up all labor hours and material costs
+        // Sum up all labor hours and collect materials
         phases.forEach(phase => {
             phase.tasks.forEach(task => {
                 totalHours += task.hours || 0;
                 task.materials.forEach(material => {
-                    materialCost += material.total_cost || 0;
+                    materialList.push(material);
                 });
             });
         });
 
-        // Apply quality tier multiplier to materials
-        const qualityMultipliers = {
-            budget: 0.7,
-            mid_range: 1.0,
-            high_end: 1.8,
-            luxury: 2.5
-        };
-
-        materialCost *= (qualityMultipliers[qualityTier] || 1.0);
-
-        // Calculate labor cost
-        const laborCost = totalHours * 65; // $65/hour for skilled carpentry
-
+        // NO PRICING CALCULATIONS - Return structure for external pricing
         return {
             totalHours,
-            laborCost,
-            materialCost,
-            totalCost: laborCost + materialCost
+            materials: materialList,
+            qualityTier: qualityTier,
+            laborHoursBreakdown: this.getLaborBreakdown(phases),
+            pricingRequired: true,
+            note: 'Material and labor costs require external pricing service integration'
         };
     }
 
@@ -269,21 +266,28 @@ class CarpentryEstimator {
      * 🎨 Trim Installation Estimation
      */
     async estimateTrim(request) {
-        // Placeholder for trim estimation logic
         return {
             phases: [{
                 phase: 'Trim Installation',
                 tasks: [{
                     task: 'Install baseboards and casing',
                     hours: 12,
-                    materials: []
+                    materials: [
+                        {
+                            item: 'Baseboard Trim',
+                            quantity: 50, // Example linear feet
+                            unit: 'linear_foot',
+                            category: 'trim',
+                            specification: 'Interior baseboard trim',
+                            pricing_required: true
+                        }
+                    ]
                 }]
             }],
             totalHours: 12,
-            laborCost: 780,
-            materialCost: 450,
             timelineDays: 2,
-            confidence: 0.88
+            pricingRequired: true,
+            note: 'Labor rates and material costs require external pricing service'
         };
     }
 
@@ -291,21 +295,28 @@ class CarpentryEstimator {
      * 🏗️ Framing Estimation
      */
     async estimateFraming(request) {
-        // Placeholder for framing estimation logic  
         return {
             phases: [{
                 phase: 'Framing',
                 tasks: [{
                     task: 'Frame walls and openings',
                     hours: 16,
-                    materials: []
+                    materials: [
+                        {
+                            item: 'Dimensional Lumber 2x4',
+                            quantity: 20, // Example pieces
+                            unit: 'each',
+                            category: 'lumber',
+                            specification: 'Structural grade 2x4 lumber',
+                            pricing_required: true
+                        }
+                    ]
                 }]
             }],
             totalHours: 16,
-            laborCost: 1040,
-            materialCost: 650,
             timelineDays: 2,
-            confidence: 0.85
+            pricingRequired: true,
+            note: 'Labor rates and material costs require external pricing service'
         };
     }
 
@@ -313,21 +324,28 @@ class CarpentryEstimator {
      * 🚪 Door Installation Estimation
      */
     async estimateDoors(request) {
-        // Placeholder for door estimation logic
         return {
             phases: [{
                 phase: 'Door Installation',
                 tasks: [{
                     task: 'Install interior doors',
                     hours: 8,
-                    materials: []
+                    materials: [
+                        {
+                            item: 'Interior Door',
+                            quantity: 3, // Example doors
+                            unit: 'each',
+                            category: 'doors',
+                            specification: 'Standard interior door with frame and hardware',
+                            pricing_required: true
+                        }
+                    ]
                 }]
             }],
             totalHours: 8,
-            laborCost: 520,
-            materialCost: 800,
             timelineDays: 1,
-            confidence: 0.90
+            pricingRequired: true,
+            note: 'Labor rates and material costs require external pricing service'
         };
     }
 
@@ -396,6 +414,16 @@ class CarpentryEstimator {
     calculateFasteners(request) {
         // Fastener calculation logic
         return [];
+    }
+
+    getLaborBreakdown(phases) {
+        const breakdown = {};
+        phases.forEach(phase => {
+            phase.tasks.forEach(task => {
+                breakdown[task.task] = task.hours || 0;
+            });
+        });
+        return breakdown;
     }
 }
 

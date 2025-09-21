@@ -266,14 +266,18 @@ class EstimateOrchestrator {
             console.warn(`⚠️ [ORCHESTRATOR] ${failed.length} trade APIs failed, using fallbacks`);
         }
 
-        // Combine successful estimates with fallbacks
+        // Only use successful estimates - NO FALLBACK PRICING
         const allEstimates = successful.map(te => ({ 
             trade: te.trade, 
             estimate: te.estimate 
-        })).concat(failed.map(te => ({ 
-            trade: te.trade, 
-            estimate: te.fallback 
-        })));
+        }));
+
+        // Track failed services for error reporting
+        const failedServices = failed.map(te => ({
+            trade: te.trade,
+            error: te.error,
+            note: 'Service unavailable - estimate incomplete'
+        }));
 
         // Resolve scheduling dependencies
         const schedule = this.resolveScheduleDependencies(allEstimates);
@@ -283,9 +287,12 @@ class EstimateOrchestrator {
 
         return {
             estimates: allEstimates,
+            failed_services: failedServices,
             schedule,
             totals,
-            confidence: this.calculateOverallConfidence(allEstimates, failed.length)
+            confidence: this.calculateOverallConfidence(allEstimates, failed.length),
+            pricing_complete: failed.length === 0,
+            requires_all_services: true
         };
     }
 
@@ -377,20 +384,14 @@ class EstimateOrchestrator {
     }
 
     getFallbackEstimate(trade, request) {
-        // Simple fallback estimates when trade APIs are unavailable
-        const fallbacks = {
-            carpentry: { labor: { total_hours: 24, cost: 1560 }, materials: { total_cost: 2500 }, total_cost: 4060 },
-            electrical: { labor: { total_hours: 12, cost: 900 }, materials: { total_cost: 800 }, total_cost: 1700 },
-            plumbing: { labor: { total_hours: 16, cost: 1200 }, materials: { total_cost: 600 }, total_cost: 1800 },
-            painting: { labor: { total_hours: 20, cost: 1300 }, materials: { total_cost: 400 }, total_cost: 1700 },
-            flooring: { labor: { total_hours: 18, cost: 1170 }, materials: { total_cost: 1200 }, total_cost: 2370 }
-        };
-
+        // NO FALLBACK PRICING - Return error structure
         return {
             request_id: request.request_id,
             trade,
-            estimate: fallbacks[trade] || fallbacks.carpentry,
-            note: 'Fallback estimate - trade service unavailable'
+            error: 'Trade service unavailable',
+            estimate: null,
+            note: `${trade} API service is currently unavailable. No fallback pricing available.`,
+            requires_service_availability: true
         };
     }
 

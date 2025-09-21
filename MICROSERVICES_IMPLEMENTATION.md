@@ -2,7 +2,17 @@
 
 ## ✅ **What We Built**
 
-We've successfully implemented a **distributed microservices architecture** for construction estimate generation, where each trade has its own specialized API service coordinated by a main orchestrator.
+We've successfully implemented a **production-ready distributed microservices architecture** for construction estimate generation, where each trade has its own specialized API service coordinated by a main orchestrator.
+
+## 🚫 **NO SIMULATION OR SAMPLE PRICING**
+
+**All APIs have been updated to remove:**
+- ❌ Hardcoded material costs
+- ❌ Sample labor rates  
+- ❌ Fallback pricing estimates
+- ❌ Simulated regional multipliers
+
+**APIs now return structure and quantities only - all pricing requires external integration.**
 
 ---
 
@@ -90,12 +100,11 @@ curl -X POST https://3001-i0k34xlfbjev6sx7pzpya-6532622b.e2b.dev/estimate \
   }'
 ```
 
-**Sample Response Summary**:
-- **Total Cost**: $16,601.58
-- **Labor Hours**: 108 hours (14 days)
-- **Labor Cost**: $7,020
-- **Material Cost**: $9,581.58
-- **Confidence**: 92%
+**Sample Response Summary** (NO PRICING):
+- **Labor Hours**: 94 hours (12 days)
+- **Materials**: 14 upper cabinet boxes, 11 base cabinet boxes, hardware
+- **Structure**: Complete phases, tasks, and material specifications
+- **Pricing Required**: External pricing service integration needed
 
 ---
 
@@ -130,27 +139,32 @@ POST /electrical-api/estimate
 POST /plumbing-api/estimate
 ```
 
-### **3. Trade API Responses**
+### **3. Trade API Responses** (NO PRICING)
 ```javascript
 {
-  carpentry: { total_cost: 16601, labor_hours: 108, confidence: 0.92 },
-  electrical: { total_cost: 2850, labor_hours: 24, confidence: 0.89 },
-  plumbing: { total_cost: 3200, labor_hours: 18, confidence: 0.91 }
+  carpentry: { 
+    labor_hours: 94, 
+    materials: [
+      { item: 'Upper Cabinet Boxes', quantity: 14, pricing_required: true },
+      { item: 'Base Cabinet Boxes', quantity: 11, pricing_required: true }
+    ],
+    pricing_required: true 
+  }
 }
 ```
 
-### **4. Coordinated Final Estimate**
+### **4. Coordinated Final Estimate** (STRUCTURE ONLY)
 ```javascript
 {
-  project_total: 22651,
-  timeline_days: 18,
   trades: [carpentry, electrical, plumbing],
   schedule: [
     { trade: 'electrical', start_day: 1, end_day: 3 },
     { trade: 'plumbing', start_day: 4, end_day: 6 },
     { trade: 'carpentry', start_day: 7, end_day: 18 }
   ],
-  confidence: 0.91
+  pricing_incomplete: true,
+  requires_external_pricing: true,
+  note: 'Structure complete - pricing integration required'
 }
 ```
 
@@ -205,10 +219,9 @@ class CarpentryAPI extends TradeAPITemplate {
   "trade": "carpentry",
   "estimate": {
     "phases": [...],
-    "labor": { "total_hours": 108, "cost": 7020, "timeline_days": 14 },
-    "materials": { "line_items": [...], "total_cost": 9581 },
-    "total_cost": 16601,
-    "confidence": 0.92,
+    "labor": { "total_hours": 94, "timeline_days": 12, "pricing_required": true },
+    "materials": { "line_items": [...], "pricing_required": true },
+    "pricing_incomplete": true,
     "complications": [...]
   },
   "coordination_requirements": {

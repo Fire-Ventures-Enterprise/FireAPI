@@ -150,16 +150,16 @@ class TradeAPITemplate {
     }
 
     /**
-     * Calculate labor costs
+     * Structure labor requirements (NO PRICING)
      */
-    calculateLaborCost(hours, skillLevel = 'skilled', region = 'national') {
-        const rates = {
-            helper: { national: 32, northeast: 38, west: 42, south: 28 },
-            skilled: { national: 65, northeast: 75, west: 82, south: 58 },
-            master: { national: 85, northeast: 95, west: 105, south: 78 }
+    structureLaborRequirements(hours, skillLevel = 'skilled', region = 'national') {
+        return {
+            hours: hours,
+            skill_level: skillLevel,
+            region: region,
+            pricing_required: true,
+            note: 'Labor rates must be provided by external pricing service'
         };
-        
-        return hours * (rates[skillLevel][region] || rates[skillLevel].national);
     }
 
     /**
@@ -170,22 +170,18 @@ class TradeAPITemplate {
     }
 
     /**
-     * Apply regional multiplier
+     * Structure regional requirements (NO PRICING MULTIPLIERS)
      */
-    applyRegionalMultiplier(cost, region = 'national') {
-        const multipliers = {
-            national: 1.0,
-            northeast: 1.15,
-            west: 1.25,
-            south: 0.90,
-            midwest: 0.95
+    structureRegionalRequirements(region = 'national') {
+        return {
+            region: region,
+            regional_factors_required: true,
+            note: 'Regional pricing multipliers must be provided by external pricing service'
         };
-        
-        return cost * (multipliers[region] || 1.0);
     }
 
     /**
-     * Generate standardized response format
+     * Generate standardized response format (NO PRICING DATA)
      */
     formatResponse(requestId, estimateData, coordinationRequirements = {}) {
         return {
@@ -195,19 +191,20 @@ class TradeAPITemplate {
                 phases: estimateData.phases || [],
                 labor: {
                     total_hours: estimateData.totalHours || 0,
-                    cost: estimateData.laborCost || 0,
-                    timeline_days: estimateData.timelineDays || 1
+                    timeline_days: estimateData.timelineDays || 1,
+                    pricing_required: true
                 },
                 materials: {
                     line_items: estimateData.materials || [],
-                    total_cost: estimateData.materialCost || 0
+                    pricing_required: true
                 },
-                total_cost: (estimateData.laborCost || 0) + (estimateData.materialCost || 0),
+                pricing_incomplete: true,
                 confidence: estimateData.confidence || 0.85,
                 complications: estimateData.complications || []
             },
             coordination_requirements: coordinationRequirements,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            note: 'Estimate structure complete - pricing data required from external service'
         };
     }
 

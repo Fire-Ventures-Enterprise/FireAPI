@@ -2,13 +2,11 @@
 
 // API Configuration - Connect Frontend to Backend
 const API_CONFIG = {
-    // TODO: Replace with your actual Railway API URL
-    // Get this from your Railway dashboard: Settings > Domains
-    // Example: 'https://fireapi-production-xxxx.up.railway.app'
-    baseURL: 'https://your-railway-app.up.railway.app',
+    // Use the custom fireapi.dev domain
+    baseURL: 'https://fireapi.dev',
     
-    // Alternative: use fireapi.dev when custom domain is configured
-    // baseURL: 'https://fireapi.dev',
+    // Fallback: Railway generated URL (if custom domain not ready)
+    // baseURL: 'https://fireapi-production-xxxx.up.railway.app',
     endpoints: {
         analyze: '/api/projects/analyze',
         completeAnalysis: '/api/projects/complete-analysis', 

@@ -11,6 +11,7 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const { FireBuildAPI } = require('./index.js');
+const MicroservicesIntegration = require('./microservices-integration');
 
 class FireAPIApp {
     constructor() {
@@ -20,6 +21,9 @@ class FireAPIApp {
             enableMetrics: true,
             enableRateLimit: false // We'll use express-rate-limit instead
         });
+        
+        // Initialize microservices integration
+        this.microservices = new MicroservicesIntegration();
         
         this.setupMiddleware();
         this.setupRoutes();
@@ -138,18 +142,27 @@ class FireAPIApp {
         this.app.get('/', (req, res) => {
             res.json({
                 name: 'FireAPI.dev Construction Intelligence',
-                version: '1.0.0',
-                description: 'AI-powered construction management API',
+                version: '2.0.0',
+                description: 'AI-powered construction management API with microservices architecture',
                 documentation: '/docs',
                 health: '/api/health',
                 endpoints: {
+                    // Legacy API endpoints
                     'POST /api/projects/analyze': 'Analyze construction project descriptions',
                     'POST /api/projects/complete-analysis': 'Full project analysis with workflow and costs',
                     'POST /api/workflows/generate': 'Generate construction workflows',
                     'POST /api/costs/estimate': 'Calculate regional cost estimates',
                     'GET /api/costs/regions': 'Available regions and pricing',
-                    'GET /api/workflows/templates': 'Workflow templates'
+                    'GET /api/workflows/templates': 'Workflow templates',
+                    
+                    // Microservices API endpoints
+                    'POST /api/estimates/multi-trade': 'Multi-trade estimate orchestration',
+                    'POST /api/estimates/single-trade/:trade': 'Individual trade estimates',
+                    'POST /api/carpentry/cabinets': 'Kitchen cabinet estimates',
+                    'GET /api/trades/available': 'Available trade services',
+                    'GET /api/microservices/health': 'Microservices health check'
                 },
+                microservices: this.microservices.getIntegrationInfo(),
                 status: 'operational',
                 timestamp: new Date().toISOString()
             });
@@ -178,6 +191,10 @@ class FireAPIApp {
                 });
             }
         });
+
+        // Add microservices integration routes
+        console.log('🎪 [APP] Adding microservices routes...');
+        this.microservices.addRoutes(this.app);
 
         // Main API routes handler
         this.app.all('/api/*', async (req, res) => {

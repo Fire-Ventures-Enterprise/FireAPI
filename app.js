@@ -273,3 +273,50 @@ class FireAPIApp {
 }
 
 module.exports = FireAPIApp;
+
+// Railway deployment entry point - START THE SERVER!
+if (require.main === module) {
+    const PORT = process.env.PORT || 3000;
+    
+    console.log('🚀 Starting FireAPI.dev Server...');
+    
+    const fireAPIApp = new FireAPIApp();
+    const app = fireAPIApp.getApp();
+    
+    const server = app.listen(PORT, '0.0.0.0', () => {
+        console.log('🚀 FireAPI.dev - Construction Intelligence API');
+        console.log('='.repeat(50));
+        console.log(`🌐 Server running on port ${PORT}`);
+        console.log(`📚 Documentation: http://localhost:${PORT}/docs`);
+        console.log(`❤️  Health check: http://localhost:${PORT}/api/health`);
+        console.log('📊 Available endpoints:');
+        console.log('  GET /');
+        console.log('  GET /docs');
+        console.log('  GET /stats'); 
+        console.log('  GET /api/health');
+        console.log('  POST /api/projects/analyze');
+        console.log('  POST /api/projects/complete-analysis');
+        console.log('  POST /api/workflows/generate');
+        console.log('  POST /api/costs/estimate');
+        console.log('  GET /api/costs/regions');
+        console.log('  GET /api/workflows/templates');
+        console.log('='.repeat(50));
+    });
+
+    // Graceful shutdown handlers
+    process.on('SIGTERM', () => {
+        console.log('SIGTERM received, shutting down gracefully...');
+        server.close(() => {
+            console.log('✅ Server closed gracefully');
+            process.exit(0);
+        });
+    });
+
+    process.on('SIGINT', () => {
+        console.log('SIGINT received, shutting down gracefully...');
+        server.close(() => {
+            console.log('✅ Server closed gracefully');
+            process.exit(0);
+        });
+    });
+}

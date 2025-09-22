@@ -1,0 +1,67 @@
+# Railway Ignore File - Exclude Frontend Files from Backend Deployment
+# This ensures only backend API files are deployed to fireapi.dev
+
+# Frontend files that might interfere with API routes
+*.html
+temp_*.html
+public/
+static/
+frontend/
+client/
+assets/
+images/
+
+# Development files
+*.md
+README*
+docs/
+documentation/
+tests/
+test/
+*.test.js
+*.spec.js
+
+# Environment and config files (use Railway variables instead)
+.env*
+.env.local
+.env.example
+
+# Build artifacts
+dist/
+build/
+coverage/
+.nyc_output/
+
+# Logs and temporary files
+*.log
+logs/
+tmp/
+temp/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Package management
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Git files
+.git/
+.gitignore
+
+# Other development tools
+.eslintrc*
+.prettier*
+jest.config.*
+babel.config.*
+webpack.config.*

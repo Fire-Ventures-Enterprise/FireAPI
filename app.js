@@ -13,6 +13,7 @@ require('dotenv').config();
 const { FireBuildAPI } = require('./index.js');
 const MicroservicesIntegration = require('./microservices-integration');
 const APIKeyAuth = require('./api-key-auth');
+const SecureComplianceRoutes = require('./secure-compliance-routes');
 
 class FireAPIApp {
     constructor() {
@@ -28,6 +29,9 @@ class FireAPIApp {
         
         // Initialize API key authentication
         this.apiKeyAuth = new APIKeyAuth();
+        
+        // Initialize secure compliance routes
+        this.secureCompliance = new SecureComplianceRoutes();
         
         this.setupMiddleware();
         this.setupRoutes();
@@ -281,6 +285,10 @@ class FireAPIApp {
         // Add microservices integration routes
         console.log('🎪 [APP] Adding microservices routes...');
         this.microservices.addRoutes(this.app);
+        
+        // Add secure compliance routes (🔒 BACKEND ONLY - No exposed APIs)
+        console.log('🔒 [APP] Adding secure compliance routes...');
+        this.app.use('/api', this.secureCompliance.getRouter());
 
         // Main API routes handler
         this.app.all('/api/*', async (req, res) => {

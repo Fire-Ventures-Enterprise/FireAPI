@@ -206,6 +206,94 @@ class MicroservicesIntegration {
             }
         });
 
+        // Electrical-specific endpoints
+        app.post('/api/electrical/kitchen', async (req, res) => {
+            try {
+                const electricalUrl = this.orchestrator.tradeServices.electrical;
+                const axios = require('axios');
+
+                const response = await axios.post(`${electricalUrl}/kitchen`, req.body, {
+                    timeout: 30000,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'kitchen_electrical',
+                    service_url: electricalUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Electrical kitchen error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'ELECTRICAL_SERVICE_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.post('/api/electrical/circuits', async (req, res) => {
+            try {
+                const electricalUrl = this.orchestrator.tradeServices.electrical;
+                const axios = require('axios');
+
+                const response = await axios.post(`${electricalUrl}/circuits`, req.body, {
+                    timeout: 30000,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'circuit_analysis',
+                    service_url: electricalUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Electrical circuits error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'ELECTRICAL_SERVICE_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.post('/api/electrical/lighting', async (req, res) => {
+            try {
+                const electricalUrl = this.orchestrator.tradeServices.electrical;
+                const axios = require('axios');
+
+                const response = await axios.post(`${electricalUrl}/lighting`, req.body, {
+                    timeout: 30000,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'lighting_design',
+                    service_url: electricalUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Electrical lighting error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'ELECTRICAL_SERVICE_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
         console.log('🎪 [MICROSERVICES] Routes added to main API');
     }
 
@@ -254,7 +342,10 @@ class MicroservicesIntegration {
             },
             specialized_endpoints: {
                 carpentry_cabinets: '/api/carpentry/cabinets',
-                // Future: electrical, plumbing, painting endpoints
+                electrical_kitchen: '/api/electrical/kitchen',
+                electrical_circuits: '/api/electrical/circuits', 
+                electrical_lighting: '/api/electrical/lighting',
+                // Future: plumbing, painting endpoints
             },
             production_ready: true,
             no_pricing_simulation: true,

@@ -20,48 +20,48 @@ class APIKeyAuth {
      * 🔥 Setup FireBuild.AI API Keys
      */
     setupFireBuildAIKeys() {
-        // Generate secure API keys for FireBuild.AI
+        // Static API keys for FireBuild.AI (consistent across deployments)
         const firebuildKeys = {
             // Production key for FireBuild.AI
             production: {
-                key: 'fb_prod_' + crypto.randomBytes(32).toString('hex'),
+                key: 'fb_prod_4ff496504b6a261c7a871fa08cbb47fd73709a4c43dcd0b4027ffd8019326138',
                 name: 'FireBuild.AI Production',
-                permissions: ['estimates', 'carpentry', 'orchestration', 'health'],
-                domains: ['firebuild.ai', 'www.firebuild.ai', '*.firebuild.ai', '*.e2b.dev'], // Added sandbox domain
+                permissions: ['estimates', 'carpentry', 'electrical', 'plumbing', 'painting', 'orchestration', 'health'],
+                domains: ['firebuild.ai', 'www.firebuild.ai', '*.firebuild.ai', '*.e2b.dev', 'localhost'], // Added sandbox and local domains
                 rateLimit: {
                     requests: 1000,    // 1000 requests per hour
                     window: 3600000    // 1 hour in ms
                 },
                 enabled: true,
-                created: new Date().toISOString()
+                created: '2025-09-21T20:00:00.000Z'
             },
             
             // Development key for FireBuild.AI
             development: {
-                key: 'fb_dev_' + crypto.randomBytes(32).toString('hex'),
+                key: 'fb_dev_5ca45e43e6cde5d55f29382e83a71eddb4c71e51709ecd4f5f267c65c0a59a9d',
                 name: 'FireBuild.AI Development', 
-                permissions: ['estimates', 'carpentry', 'orchestration', 'health'],
+                permissions: ['estimates', 'carpentry', 'electrical', 'plumbing', 'painting', 'orchestration', 'health'],
                 domains: ['localhost', '127.0.0.1', 'dev.firebuild.ai', 'staging.firebuild.ai'],
                 rateLimit: {
                     requests: 500,     // 500 requests per hour
                     window: 3600000    // 1 hour in ms
                 },
                 enabled: true,
-                created: new Date().toISOString()
+                created: '2025-09-21T20:00:00.000Z'
             },
 
             // Demo key for testing
             demo: {
-                key: 'fb_demo_' + crypto.randomBytes(16).toString('hex'),
+                key: 'fb_demo_68657471b5a684d79aed27f4a56c229b',
                 name: 'FireBuild.AI Demo',
-                permissions: ['estimates', 'health'],
+                permissions: ['estimates', 'health', 'carpentry', 'electrical', 'plumbing', 'painting', 'orchestration'],
                 domains: ['*'], // Allow from anywhere for demo
                 rateLimit: {
                     requests: 100,     // 100 requests per hour
                     window: 3600000    // 1 hour in ms
                 },
                 enabled: true,
-                created: new Date().toISOString()
+                created: '2025-09-21T20:00:00.000Z'
             }
         };
 
@@ -288,6 +288,9 @@ class APIKeyAuth {
     getEndpointCategory(path) {
         if (path.startsWith('/api/estimates')) return 'estimates';
         if (path.startsWith('/api/carpentry')) return 'carpentry';
+        if (path.startsWith('/api/electrical')) return 'electrical';
+        if (path.startsWith('/api/plumbing')) return 'plumbing';
+        if (path.startsWith('/api/painting')) return 'painting';
         if (path.startsWith('/api/microservices')) return 'orchestration';
         if (path.startsWith('/api/trades')) return 'orchestration';
         if (path.includes('health')) return 'health';

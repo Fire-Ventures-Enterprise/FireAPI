@@ -21,7 +21,8 @@ class MicroservicesIntegration {
             plumbing: process.env.PLUMBING_API_URL || 'http://localhost:3003',
             painting: process.env.PAINTING_API_URL || 'http://localhost:3004',
             flooring: process.env.FLOORING_API_URL || 'http://localhost:3005',
-            hvac: process.env.HVAC_API_URL || 'http://localhost:3006'
+            hvac: process.env.HVAC_API_URL || 'http://localhost:3006',
+            compliance: process.env.COMPLIANCE_API_URL || 'http://localhost:3007'
         };
 
         console.log('🔧 [MICROSERVICES] Service URLs configured:');
@@ -294,6 +295,93 @@ class MicroservicesIntegration {
             }
         });
 
+        // Building Code Compliance endpoints
+        app.post('/api/compliance/check', async (req, res) => {
+            try {
+                const complianceUrl = this.orchestrator.tradeServices.compliance;
+                const axios = require('axios');
+
+                const response = await axios.post(`${complianceUrl}/check`, req.body, {
+                    timeout: 30000,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'building_code_compliance',
+                    service_url: complianceUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Compliance check error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'COMPLIANCE_SERVICE_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.post('/api/compliance/kitchen', async (req, res) => {
+            try {
+                const complianceUrl = this.orchestrator.tradeServices.compliance;
+                const axios = require('axios');
+
+                const response = await axios.post(`${complianceUrl}/kitchen`, req.body, {
+                    timeout: 30000,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'kitchen_code_compliance',
+                    service_url: complianceUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Kitchen compliance error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'COMPLIANCE_SERVICE_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/compliance/violations', async (req, res) => {
+            try {
+                const complianceUrl = this.orchestrator.tradeServices.compliance;
+                const axios = require('axios');
+
+                const response = await axios.get(`${complianceUrl}/violations`, {
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'violation_statistics',
+                    service_url: complianceUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Violations stats error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'COMPLIANCE_SERVICE_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
         console.log('🎪 [MICROSERVICES] Routes added to main API');
     }
 
@@ -345,6 +433,9 @@ class MicroservicesIntegration {
                 electrical_kitchen: '/api/electrical/kitchen',
                 electrical_circuits: '/api/electrical/circuits', 
                 electrical_lighting: '/api/electrical/lighting',
+                compliance_check: '/api/compliance/check',
+                compliance_kitchen: '/api/compliance/kitchen',
+                compliance_violations: '/api/compliance/violations',
                 // Future: plumbing, painting endpoints
             },
             production_ready: true,

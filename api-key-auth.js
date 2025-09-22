@@ -26,7 +26,7 @@ class APIKeyAuth {
             production: {
                 key: 'fb_prod_4ff496504b6a261c7a871fa08cbb47fd73709a4c43dcd0b4027ffd8019326138',
                 name: 'FireBuild.AI Production',
-                permissions: ['estimates', 'carpentry', 'electrical', 'plumbing', 'painting', 'orchestration', 'health'],
+                permissions: ['estimates', 'carpentry', 'electrical', 'plumbing', 'painting', 'compliance', 'orchestration', 'health'],
                 domains: ['firebuild.ai', 'www.firebuild.ai', '*.firebuild.ai', '*.e2b.dev', 'localhost'], // Added sandbox and local domains
                 rateLimit: {
                     requests: 1000,    // 1000 requests per hour
@@ -40,7 +40,7 @@ class APIKeyAuth {
             development: {
                 key: 'fb_dev_5ca45e43e6cde5d55f29382e83a71eddb4c71e51709ecd4f5f267c65c0a59a9d',
                 name: 'FireBuild.AI Development', 
-                permissions: ['estimates', 'carpentry', 'electrical', 'plumbing', 'painting', 'orchestration', 'health'],
+                permissions: ['estimates', 'carpentry', 'electrical', 'plumbing', 'painting', 'compliance', 'orchestration', 'health'],
                 domains: ['localhost', '127.0.0.1', 'dev.firebuild.ai', 'staging.firebuild.ai'],
                 rateLimit: {
                     requests: 500,     // 500 requests per hour
@@ -54,7 +54,7 @@ class APIKeyAuth {
             demo: {
                 key: 'fb_demo_68657471b5a684d79aed27f4a56c229b',
                 name: 'FireBuild.AI Demo',
-                permissions: ['estimates', 'health', 'carpentry', 'electrical', 'plumbing', 'painting', 'orchestration'],
+                permissions: ['estimates', 'health', 'carpentry', 'electrical', 'plumbing', 'painting', 'compliance', 'orchestration'],
                 domains: ['*'], // Allow from anywhere for demo
                 rateLimit: {
                     requests: 100,     // 100 requests per hour
@@ -291,6 +291,7 @@ class APIKeyAuth {
         if (path.startsWith('/api/electrical')) return 'electrical';
         if (path.startsWith('/api/plumbing')) return 'plumbing';
         if (path.startsWith('/api/painting')) return 'painting';
+        if (path.startsWith('/api/compliance')) return 'compliance';
         if (path.startsWith('/api/microservices')) return 'orchestration';
         if (path.startsWith('/api/trades')) return 'orchestration';
         if (path.includes('health')) return 'health';

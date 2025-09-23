@@ -7,6 +7,7 @@ const FireBuildAIServer = require('./server.js');
 const SEOAPIService = require('./seo-api.js');
 const RoomVisualizerAPI = require('./room-visualizer-api.js');
 const ImageUploadHandler = require('./image-upload-handler.js');
+const FlooringImportRoutes = require('./flooring-import-routes.js');
 
 class APIRoutes {
     constructor() {
@@ -14,6 +15,12 @@ class APIRoutes {
         this.seoService = new SEOAPIService();
         this.visualizerService = new RoomVisualizerAPI();
         this.imageHandler = new ImageUploadHandler();
+        
+        // Initialize Flooring Import API with Supabase credentials (if available)
+        const supabaseUrl = process.env.SUPABASE_URL || null;
+        const supabaseKey = process.env.SUPABASE_ANON_KEY || null;
+        this.flooringImportRoutes = new FlooringImportRoutes(supabaseUrl, supabaseKey);
+        
         this.endpoints = this.defineEndpoints();
     }
 
@@ -431,7 +438,11 @@ class APIRoutes {
             // Room Visualizer API routes
             else if (path.startsWith('/api/visualizer/')) {
                 response = await this.handleVisualizerRequest(method, path, body, query);
-            } 
+            }
+            // Flooring Import API routes  
+            else if (path.startsWith('/api/flooring/import/')) {
+                response = await this.handleFlooringImportRequest(method, path, body, query, headers);
+            }
             else {
                 // Construction API routes
                 response = await this.server.handleRequest(method, path, body, query);
@@ -740,6 +751,296 @@ class APIRoutes {
                 timestamp: new Date().toISOString()
             };
         }
+    }
+
+    /**
+     * Handle Flooring Import API requests
+     */
+    async handleFlooringImportRequest(method, path, body, query, headers) {
+        try {
+            console.log(`📦 Flooring Import API Request: ${method} ${path}`);
+            
+            // Extract the route path after /api/flooring/import/
+            const importPath = path.replace('/api/flooring/import', '');
+            
+            // Create a mock request object for the flooring import routes
+            const mockReq = {
+                method,
+                path: importPath || '/',
+                body,
+                query,
+                headers,
+                // Add user from JWT if available
+                user: this.extractUserFromHeaders(headers)
+            };
+            
+            const mockRes = {
+                statusCode: 200,
+                headers: {},
+                json: (data) => {
+                    this.responseData = data;
+                    return this;
+                },
+                status: (code) => {
+                    this.statusCode = code;
+                    return this;
+                },
+                setHeader: (name, value) => {
+                    this.headers[name] = value;
+                    return this;
+                },
+                send: (data) => {
+                    this.responseData = data;
+                    return this;
+                }
+            };
+
+            // Route the request through the flooring import routes
+            const router = this.flooringImportRoutes.getRouter();
+            
+            // Handle the specific endpoints
+            switch (`${method} ${importPath}`) {
+                case 'GET /health':
+                case 'GET /docs':
+                case 'GET /template':
+                case 'GET /validation-rules':
+                    return await this.handleFlooringImportGet(method, importPath, query, headers);
+                    
+                case 'POST /upload':
+                    return await this.handleFlooringImportUpload(body, headers);
+                    
+                case 'GET /history':
+                    return await this.handleFlooringImportHistory(query, headers);
+                    
+                default:
+                    // Check if it's a status or session endpoint
+                    if (importPath.match(/^\/status\/[a-zA-Z0-9\-]+$/)) {
+                        const sessionId = importPath.split('/')[2];
+                        return await this.handleFlooringImportStatus(sessionId, headers);
+                    }
+                    
+                    if (importPath.match(/^\/session\/[a-zA-Z0-9\-]+$/) && method === 'DELETE') {
+                        const sessionId = importPath.split('/')[2];
+                        return await this.handleFlooringImportDelete(sessionId, headers);
+                    }
+                    
+                    throw new Error(`Flooring import endpoint not implemented: ${method} ${importPath}`);
+            }
+            
+        } catch (error) {
+            console.error(`❌ Flooring Import API Error:`, error);
+            return {
+                success: false,
+                error: {
+                    code: 'FLOORING_IMPORT_ERROR',
+                    message: error.message,
+                    timestamp: new Date().toISOString()
+                }
+            };
+        }
+    }
+
+    /**
+     * Extract user information from JWT headers
+     */
+    extractUserFromHeaders(headers) {
+        const authHeader = headers['authorization'] || headers['Authorization'];
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return null;
+        }
+
+        try {
+            const jwt = require('jsonwebtoken');
+            const token = authHeader.split(' ')[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+            return decoded;
+        } catch (error) {
+            console.warn('JWT verification failed:', error.message);
+            return null;
+        }
+    }
+
+    /**
+     * Handle flooring import GET requests
+     */
+    async handleFlooringImportGet(method, path, query, headers) {
+        const importAPI = this.flooringImportRoutes.importAPI;
+        
+        switch (path) {
+            case '/health':
+                return {
+                    success: true,
+                    service: 'Flooring Import API',
+                    version: '1.0.0',
+                    status: 'healthy',
+                    timestamp: new Date().toISOString(),
+                    features: [
+                        'CSV bulk import',
+                        'Data validation',
+                        'Progress tracking',
+                        'Batch processing',
+                        'JWT authentication'
+                    ]
+                };
+                
+            case '/docs':
+                return {
+                    success: true,
+                    documentation: {
+                        title: 'Flooring Products Bulk Import API',
+                        version: '1.0.0',
+                        baseUrl: '/api/flooring/import',
+                        authentication: 'JWT Bearer token required',
+                        rateLimit: '10 imports per hour, 100 requests per 15 minutes',
+                        endpoints: {
+                            'POST /upload': 'Upload CSV file for bulk import',
+                            'GET /status/:sessionId': 'Get import session status',
+                            'GET /history': 'Get user import history',
+                            'GET /template': 'Download CSV template',
+                            'GET /stats': 'Get import statistics (admin only)'
+                        },
+                        csvFormat: {
+                            requiredColumns: ['product_name', 'sku', 'price'],
+                            optionalColumns: [
+                                'category', 'stock_quantity', 'description', 'manufacturer',
+                                'dimensions', 'material', 'color', 'installation_type',
+                                'warranty_years', 'square_feet_per_box', 'weight_per_box',
+                                'thickness', 'finish'
+                            ],
+                            maxFileSize: '10MB',
+                            maxRows: 10000
+                        }
+                    }
+                };
+                
+            case '/template':
+                // Return CSV template data
+                const csvHeaders = [
+                    'product_name', 'sku', 'category', 'price', 'stock_quantity',
+                    'description', 'manufacturer', 'dimensions', 'material', 'color',
+                    'installation_type', 'warranty_years', 'square_feet_per_box',
+                    'weight_per_box', 'thickness', 'finish'
+                ];
+                
+                const sampleData = [
+                    'Premium Oak Hardwood', 'OAK-001', 'hardwood', '8.99', '150',
+                    'Beautiful solid oak hardwood flooring', 'FloorCraft', '3.25" x 0.75"',
+                    'oak', 'natural', 'nail-down', '25', '20', '45.5', '0.75"', 'satin'
+                ];
+
+                return {
+                    success: true,
+                    template: {
+                        headers: csvHeaders,
+                        sampleData: sampleData,
+                        csvContent: [csvHeaders, sampleData]
+                            .map(row => Array.isArray(row) 
+                                ? row.map(cell => `"${cell}"`).join(',')
+                                : row.map(cell => `"${cell}"`).join(',')
+                            ).join('\n')
+                    }
+                };
+                
+            case '/validation-rules':
+                return {
+                    success: true,
+                    validationRules: importAPI.validationRules
+                };
+                
+            default:
+                throw new Error(`GET endpoint not implemented: ${path}`);
+        }
+    }
+
+    /**
+     * Handle flooring import upload
+     */
+    async handleFlooringImportUpload(body, headers) {
+        // Note: This is a simplified version since we can't handle file uploads directly in this context
+        // In production, this would need to be handled by the Express router with multer middleware
+        
+        throw new Error('File uploads must be handled through the Express router with proper middleware');
+    }
+
+    /**
+     * Handle flooring import history
+     */
+    async handleFlooringImportHistory(query, headers) {
+        const user = this.extractUserFromHeaders(headers);
+        if (!user) {
+            throw new Error('Authentication required');
+        }
+
+        const limit = Math.min(parseInt(query.limit) || 10, 50);
+        const importAPI = this.flooringImportRoutes.importAPI;
+        const history = importAPI.getUserImportHistory(user.id, limit);
+
+        return {
+            success: true,
+            data: {
+                imports: history,
+                totalCount: history.length,
+                limit
+            }
+        };
+    }
+
+    /**
+     * Handle flooring import status check
+     */
+    async handleFlooringImportStatus(sessionId, headers) {
+        const user = this.extractUserFromHeaders(headers);
+        if (!user) {
+            throw new Error('Authentication required');
+        }
+
+        const importAPI = this.flooringImportRoutes.importAPI;
+        const session = importAPI.getSessionStatus(sessionId);
+
+        if (!session) {
+            throw new Error('Import session not found');
+        }
+
+        // Check if user owns this session (unless admin)
+        if (session.userId !== user.id && user.role !== 'admin') {
+            throw new Error('You can only access your own import sessions');
+        }
+
+        return {
+            success: true,
+            data: session
+        };
+    }
+
+    /**
+     * Handle flooring import session deletion
+     */
+    async handleFlooringImportDelete(sessionId, headers) {
+        const user = this.extractUserFromHeaders(headers);
+        if (!user) {
+            throw new Error('Authentication required');
+        }
+
+        const importAPI = this.flooringImportRoutes.importAPI;
+        const session = importAPI.getSessionStatus(sessionId);
+
+        if (!session) {
+            throw new Error('Import session not found');
+        }
+
+        // Check if user owns this session (unless admin)
+        if (session.userId !== user.id && user.role !== 'admin') {
+            throw new Error('You can only delete your own import sessions');
+        }
+
+        // Delete session
+        importAPI.importSessions.delete(sessionId);
+
+        return {
+            success: true,
+            message: 'Import session deleted successfully',
+            sessionId
+        };
     }
 
     /**

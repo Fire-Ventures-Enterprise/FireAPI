@@ -22,7 +22,8 @@ class MicroservicesIntegration {
             painting: process.env.PAINTING_API_URL || 'http://localhost:3004',
             flooring: process.env.FLOORING_API_URL || 'http://localhost:3005',
             hvac: process.env.HVAC_API_URL || 'http://localhost:3006',
-            compliance: process.env.COMPLIANCE_API_URL || 'http://localhost:3007'
+            compliance: process.env.COMPLIANCE_API_URL || 'http://localhost:3007',
+            tasks: process.env.TASKS_API_URL || 'http://localhost:3008'
         };
 
         console.log('🔧 [MICROSERVICES] Service URLs configured:');
@@ -382,7 +383,126 @@ class MicroservicesIntegration {
             }
         });
 
+        // 🎯 Task Orchestrator Routes - Revolutionary Construction Task Management
+        app.post('/api/tasks/project', async (req, res) => {
+            try {
+                const tasksUrl = this.orchestrator.tradeServices.tasks;
+                const axios = require('axios');
+
+                const response = await axios.post(`${tasksUrl}/project`, req.body, {
+                    headers: { 'Content-Type': 'application/json' },
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'intelligent_task_orchestration',
+                    service_url: tasksUrl,
+                    features: ['dependency_tracking', 'weather_integration', 'trade_coordination', 'critical_path']
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Task orchestrator error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'TASK_ORCHESTRATOR_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/tasks/project/:projectId', async (req, res) => {
+            try {
+                const tasksUrl = this.orchestrator.tradeServices.tasks;
+                const { projectId } = req.params;
+                const axios = require('axios');
+
+                const response = await axios.get(`${tasksUrl}/project/${projectId}`, {
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'project_status_tracking',
+                    service_url: tasksUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Task project retrieval error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'TASK_PROJECT_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/tasks/project/:projectId/timeline', async (req, res) => {
+            try {
+                const tasksUrl = this.orchestrator.tradeServices.tasks;
+                const { projectId } = req.params;
+                const axios = require('axios');
+
+                const response = await axios.get(`${tasksUrl}/project/${projectId}/timeline`, {
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'construction_timeline_optimization',
+                    service_url: tasksUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Task timeline error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'TASK_TIMELINE_ERROR', 
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/tasks/project/:projectId/next-actions', async (req, res) => {
+            try {
+                const tasksUrl = this.orchestrator.tradeServices.tasks;
+                const { projectId } = req.params;
+                const axios = require('axios');
+
+                const response = await axios.get(`${tasksUrl}/project/${projectId}/next-actions`, {
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'actionable_task_intelligence',
+                    service_url: tasksUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Next actions error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'NEXT_ACTIONS_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
         console.log('🎪 [MICROSERVICES] Routes added to main API');
+        console.log('🎯 [TASK ORCHESTRATOR] Revolutionary task management integrated');
     }
 
     /**

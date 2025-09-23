@@ -23,7 +23,8 @@ class MicroservicesIntegration {
             flooring: process.env.FLOORING_API_URL || 'http://localhost:3005',
             hvac: process.env.HVAC_API_URL || 'http://localhost:3006',
             compliance: process.env.COMPLIANCE_API_URL || 'http://localhost:3007',
-            tasks: process.env.TASKS_API_URL || 'http://localhost:3008'
+            tasks: process.env.TASKS_API_URL || 'http://localhost:3008',
+            files: process.env.FILES_API_URL || 'http://localhost:3009'
         };
 
         console.log('🔧 [MICROSERVICES] Service URLs configured:');
@@ -501,8 +502,102 @@ class MicroservicesIntegration {
             }
         });
 
+        // 📁 File Management Routes - Revolutionary Construction File Storage
+        app.post('/api/files/upload/single', async (req, res) => {
+            try {
+                const filesUrl = this.orchestrator.tradeServices.files;
+                const axios = require('axios');
+
+                // Forward multipart form data to file service
+                const response = await axios.post(`${filesUrl}/upload/single`, req.body, {
+                    headers: { 
+                        'Content-Type': req.headers['content-type']
+                    },
+                    timeout: 60000 // Longer timeout for file uploads
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'construction_file_management',
+                    service_url: filesUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] File upload error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'FILE_UPLOAD_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/files/project/:projectId/files', async (req, res) => {
+            try {
+                const filesUrl = this.orchestrator.tradeServices.files;
+                const { projectId } = req.params;
+                const axios = require('axios');
+
+                const queryParams = new URLSearchParams(req.query).toString();
+                const url = `${filesUrl}/project/${projectId}/files${queryParams ? '?' + queryParams : ''}`;
+
+                const response = await axios.get(url, {
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'project_file_organization',
+                    service_url: filesUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Get project files error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'PROJECT_FILES_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/files/categories', async (req, res) => {
+            try {
+                const filesUrl = this.orchestrator.tradeServices.files;
+                const axios = require('axios');
+
+                const response = await axios.get(`${filesUrl}/categories`, {
+                    timeout: 5000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'file_categorization_system',
+                    service_url: filesUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] File categories error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'FILE_CATEGORIES_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
         console.log('🎪 [MICROSERVICES] Routes added to main API');
         console.log('🎯 [TASK ORCHESTRATOR] Revolutionary task management integrated');
+        console.log('📁 [FILE MANAGEMENT] Revolutionary file storage system integrated');
     }
 
     /**

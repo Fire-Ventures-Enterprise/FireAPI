@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const sharp = require('sharp');
+const GeoLocationManager = require('./geo-location-manager');
 
 /**
  * Intelligent Metadata Extractor for Construction Files
@@ -17,6 +18,7 @@ class MetadataExtractor {
         // Initialize extraction engines
         this.pdfParser = null;
         this.exifParser = null;
+        this.geoLocationManager = new GeoLocationManager();
         
         // Try to load optional parsers
         this.initializeParsers();
@@ -64,6 +66,24 @@ class MetadataExtractor {
 
             // Analyze for construction-specific content
             metadata.constructionAnalysis = await this.analyzeConstructionContent(filePath, mimeType);
+
+            // GPS-based project detection for images
+            if (mimeType.startsWith('image/') && metadata.location) {
+                metadata.gpsProjectDetection = await this.geoLocationManager.detectProjectFromGPS(metadata.location);
+                
+                if (metadata.gpsProjectDetection.detected) {
+                    // Enhance metadata with project information
+                    metadata.autoDetectedProject = {
+                        projectId: metadata.gpsProjectDetection.projectId,
+                        projectName: metadata.gpsProjectDetection.project.name,
+                        confidence: metadata.gpsProjectDetection.confidence,
+                        distance: metadata.gpsProjectDetection.distance
+                    };
+
+                    // Get reverse geocoding information
+                    metadata.addressInfo = await this.geoLocationManager.reverseGeocode(metadata.location);
+                }
+            }
             
         } catch (error) {
             console.warn('Metadata extraction warning:', error.message);

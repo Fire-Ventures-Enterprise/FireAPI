@@ -133,6 +133,7 @@ class FileManager {
         // Categorize file automatically
         const category = this.categorizeFile(file, metadata);
         
+        // Initialize file record
         const fileRecord = {
             id: fileId,
             originalName: file.originalname,
@@ -156,6 +157,36 @@ class FileManager {
                 isCAD: this.isCADFile(file.mimetype)
             }
         };
+
+        // GPS-based auto-organization for images
+        if (metadata.gpsProjectDetection && metadata.gpsProjectDetection.detected) {
+            const gpsDetection = metadata.gpsProjectDetection;
+            
+            // Auto-assign project if not already specified
+            if (!fileRecord.projectId) {
+                fileRecord.projectId = gpsDetection.projectId;
+                console.log(`📍 [AUTO-ORG] GPS detected project: ${gpsDetection.project.name} (${gpsDetection.distance}m away)`);
+            }
+
+            // Add GPS-based tags
+            const gpsTag = metadata.gpsProjectDetection ? this.generateGPSTags(metadata.gpsProjectDetection) : [];
+            fileRecord.tags = [...(fileRecord.tags || []), ...gpsTag];
+
+            // Add GPS organization info
+            fileRecord.gpsOrganization = {
+                autoDetected: true,
+                detectedProject: gpsDetection.project.name,
+                confidence: gpsDetection.confidence,
+                distance: gpsDetection.distance,
+                coordinates: gpsDetection.coordinates,
+                organizationTimestamp: now
+            };
+
+            // Auto-detect construction phase if not specified
+            if (!fileRecord.phase && metadata.autoDetectedProject) {
+                fileRecord.phase = this.detectPhaseFromGPS(metadata);
+            }
+        }
 
         // Store in database (in production, use proper database)
         this.fileDatabase.set(fileId, fileRecord);
@@ -229,6 +260,56 @@ class FileManager {
         }
         
         return 'other';
+    }
+
+    /**
+     * Generate GPS-based tags for auto-organization
+     */
+    generateGPSTags(gpsDetection) {
+        const tags = [
+            'gps-auto-detected',
+            `confidence-${Math.round(gpsDetection.confidence * 100)}`,
+            `distance-${gpsDetection.distance}m`
+        ];
+
+        if (gpsDetection.distance <= 10) {
+            tags.push('on-site-location');
+        } else if (gpsDetection.distance <= 50) {
+            tags.push('near-site-location');
+        }
+
+        // Add project-specific tags
+        if (gpsDetection.project.type) {
+            tags.push(`project-type-${gpsDetection.project.type}`);
+        }
+
+        return tags;
+    }
+
+    /**
+     * Detect construction phase from GPS and metadata context
+     */
+    detectPhaseFromGPS(metadata) {
+        // Use existing phase detection logic but enhance with GPS context
+        const fileName = metadata.originalName ? metadata.originalName.toLowerCase() : '';
+        
+        // Phase detection keywords
+        const phaseKeywords = {
+            'site-preparation': ['site', 'excavation', 'clearing', 'survey'],
+            'foundation': ['foundation', 'concrete', 'footings', 'basement'],
+            'framing': ['framing', 'frame', 'studs', 'beams', 'structural'],
+            'mechanical-electrical-plumbing': ['electrical', 'plumbing', 'hvac', 'wiring', 'pipes'],
+            'insulation-drywall': ['insulation', 'drywall', 'vapor', 'barrier'],
+            'flooring-finishes': ['flooring', 'paint', 'trim', 'finish', 'cabinet']
+        };
+
+        for (const [phase, keywords] of Object.entries(phaseKeywords)) {
+            if (keywords.some(keyword => fileName.includes(keyword))) {
+                return phase;
+            }
+        }
+
+        return 'general'; // Default phase
     }
 
     isCADFile(mimeType) {

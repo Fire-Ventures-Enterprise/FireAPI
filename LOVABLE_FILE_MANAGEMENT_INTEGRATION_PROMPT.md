@@ -21,11 +21,42 @@ You are building a **Revolutionary Construction File Management System** that go
 
 **Base URL**: `https://3009-i0k34xlfbjev6sx7pzpya-6532622b.e2b.dev`
 
+### 📍 Revolutionary GPS Auto-Detection Feature
+
+**When users take photos at job locations, the API automatically detects GPS coordinates and organizes files to the correct project!**
+
 ### Core API Integration
 
 ```javascript
 // File Management API Client
 const FILE_API_BASE = 'https://3009-i0k34xlfbjev6sx7pzpya-6532622b.e2b.dev';
+
+// GPS Auto-Detection Functions
+const detectProjectFromGPS = async (coordinates) => {
+  const response = await fetch(`${FILE_API_BASE}/gps/detect-project`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ coordinates })
+  });
+  return response.json();
+};
+
+const getCurrentLocationProject = async () => {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const coordinates = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        };
+        const detection = await detectProjectFromGPS(coordinates);
+        resolve(detection);
+      },
+      error => reject(error),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  });
+};
 
 // Get file categories for UI
 const getFileCategories = async () => {
@@ -176,18 +207,38 @@ const FileManagementDashboard = ({ projectId }) => {
 };
 ```
 
-### 2. Progress Photo Upload Component
+### 2. Progress Photo Upload Component with GPS Auto-Detection
 
 ```tsx
 const ProgressPhotoUpload = ({ projectId, taskId, phase }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [beforeAfter, setBeforeAfter] = useState('after');
+  const [gpsDetection, setGpsDetection] = useState(null);
+  const [autoDetectedProject, setAutoDetectedProject] = useState(null);
 
   const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
     setSelectedFiles(files);
   };
+
+  // GPS Auto-Detection on Component Mount
+  useEffect(() => {
+    const detectCurrentLocation = async () => {
+      try {
+        const detection = await getCurrentLocationProject();
+        setGpsDetection(detection);
+        
+        if (detection.detection?.detected && !projectId) {
+          setAutoDetectedProject(detection.detection.project);
+        }
+      } catch (error) {
+        console.log('GPS detection not available:', error);
+      }
+    };
+    
+    detectCurrentLocation();
+  }, []);
 
   const handleUpload = async () => {
     if (selectedFiles.length === 0) return;
@@ -196,7 +247,13 @@ const ProgressPhotoUpload = ({ projectId, taskId, phase }) => {
     try {
       const formData = new FormData();
       selectedFiles.forEach(file => formData.append('photos', file));
-      formData.append('projectId', projectId);
+      
+      // Use auto-detected project if available
+      const targetProjectId = projectId || autoDetectedProject?.projectId;
+      if (targetProjectId) {
+        formData.append('projectId', targetProjectId);
+      }
+      
       formData.append('taskId', taskId);
       formData.append('phase', phase);
       formData.append('beforeAfter', beforeAfter);
@@ -209,8 +266,8 @@ const ProgressPhotoUpload = ({ projectId, taskId, phase }) => {
       const result = await response.json();
       
       if (result.success) {
-        // Show success with analysis results
-        showProgressAnalysis(result.photos);
+        // Show success with GPS analysis results
+        showProgressAnalysis(result.photos, result.autoOrganization);
         setSelectedFiles([]);
       }
     } catch (error) {
@@ -225,7 +282,39 @@ const ProgressPhotoUpload = ({ projectId, taskId, phase }) => {
       <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
         <Camera className="w-5 h-5 text-green-600" />
         Upload Progress Photos
+        {gpsDetection?.detection?.detected && (
+          <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+            📍 GPS Auto-Detected
+          </span>
+        )}
       </h3>
+
+      {/* GPS Auto-Detection Status */}
+      {gpsDetection && (
+        <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+          {gpsDetection.detection?.detected ? (
+            <div className="flex items-center gap-2 text-blue-800">
+              <MapPin className="w-4 h-4" />
+              <span className="text-sm">
+                📍 Auto-detected project: <strong>{gpsDetection.detection.project.name}</strong>
+                {gpsDetection.detection.distance > 0 && (
+                  <span className="text-blue-600"> ({gpsDetection.detection.distance}m away)</span>
+                )}
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-orange-800">
+              <AlertTriangle className="w-4 h-4" />
+              <span className="text-sm">
+                📍 No project detected at current location
+                {gpsDetection.detection?.suggestedProject && (
+                  <span> - Nearest: {gpsDetection.detection.suggestedProject.project.name}</span>
+                )}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="space-y-4">
         {/* Before/After Toggle */}
@@ -335,10 +424,108 @@ const FileCategoryGrid = ({ categories, onCategorySelect }) => {
 };
 ```
 
-### 4. Progress Analysis Display
+### 4. GPS Project Management Component
 
 ```tsx
-const ProgressAnalysisCard = ({ analysis }) => {
+const GPSProjectManager = () => {
+  const [projectLocations, setProjectLocations] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  useEffect(() => {
+    loadProjectLocations();
+  }, []);
+
+  const loadProjectLocations = async () => {
+    try {
+      const response = await fetch(`${FILE_API_BASE}/gps/project-locations`);
+      const data = await response.json();
+      setProjectLocations(data.locations || []);
+    } catch (error) {
+      console.error('Error loading project locations:', error);
+    }
+  };
+
+  const addProjectLocation = async (projectData) => {
+    try {
+      const response = await fetch(`${FILE_API_BASE}/gps/add-project-location`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(projectData)
+      });
+      
+      if (response.ok) {
+        await loadProjectLocations();
+        setShowAddForm(false);
+      }
+    } catch (error) {
+      console.error('Error adding project location:', error);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-semibold flex items-center gap-2">
+          <MapPin className="w-5 h-5 text-blue-600" />
+          GPS Project Locations
+        </h3>
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+        >
+          <Plus className="w-4 h-4" />
+          Add Location
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {projectLocations.map(project => (
+          <div key={project.projectId} className="border border-gray-200 rounded-lg p-4">
+            <div className="flex items-start justify-between mb-2">
+              <h4 className="font-medium text-gray-900">{project.name}</h4>
+              <span className={`px-2 py-1 text-xs rounded-full ${
+                project.type === 'residential-renovation' ? 'bg-green-100 text-green-800' :
+                project.type === 'new-construction' ? 'bg-blue-100 text-blue-800' :
+                'bg-orange-100 text-orange-800'
+              }`}>
+                {project.type}
+              </span>
+            </div>
+            
+            <p className="text-sm text-gray-600 mb-2">{project.address}</p>
+            
+            <div className="flex items-center justify-between text-xs text-gray-500">
+              <span>📍 {project.coordinates.latitude.toFixed(4)}, {project.coordinates.longitude.toFixed(4)}</span>
+              <span>🔵 {project.radius}m radius</span>
+            </div>
+
+            <div className="mt-3 flex gap-2">
+              <button className="text-blue-600 hover:text-blue-800 text-sm">
+                View on Map
+              </button>
+              <button className="text-green-600 hover:text-green-800 text-sm">
+                Test Detection
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {showAddForm && (
+        <AddProjectLocationModal
+          onAdd={addProjectLocation}
+          onCancel={() => setShowAddForm(false)}
+        />
+      )}
+    </div>
+  );
+};
+```
+
+### 5. Progress Analysis Display
+
+```tsx
+const ProgressAnalysisCard = ({ analysis, gpsAutoOrganization }) => {
   const getQualityColor = (quality) => {
     switch (quality) {
       case 'excellent': return 'text-green-600 bg-green-100';

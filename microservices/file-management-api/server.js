@@ -24,6 +24,7 @@ const FileManager = require('./src/file-manager');
 const MetadataExtractor = require('./src/metadata-extractor');
 const ComplianceTracker = require('./src/compliance-tracker');
 const ProgressAnalyzer = require('./src/progress-analyzer');
+const GeoLocationManager = require('./src/geo-location-manager');
 
 class FileManagementAPI {
     constructor() {
@@ -33,6 +34,7 @@ class FileManagementAPI {
         this.metadataExtractor = new MetadataExtractor();
         this.complianceTracker = new ComplianceTracker();
         this.progressAnalyzer = new ProgressAnalyzer();
+        this.geoLocationManager = new GeoLocationManager();
         
         this.setupMiddleware();
         this.setupStorage();
@@ -141,6 +143,13 @@ class FileManagementAPI {
         this.app.post('/link-to-task', this.handleLinkToTask.bind(this));
         this.app.get('/task/:taskId/files', this.handleGetTaskFiles.bind(this));
 
+        // GPS-based project detection and management
+        this.app.post('/gps/detect-project', this.handleGPSProjectDetection.bind(this));
+        this.app.post('/gps/add-project-location', this.handleAddProjectLocation.bind(this));
+        this.app.get('/gps/project-locations', this.handleGetProjectLocations.bind(this));
+        this.app.put('/gps/project/:projectId/boundaries', this.handleUpdateProjectBoundaries.bind(this));
+        this.app.get('/gps/project/:projectId/analytics', this.handleGetLocationAnalytics.bind(this));
+
         // Additional handler methods
         this.app.get('/file/:fileId/metadata', this.handleGetMetadata.bind(this));
         this.app.post('/file/:fileId/analyze', this.handleFileAnalysis.bind(this));
@@ -247,11 +256,29 @@ class FileManagementAPI {
                 await this.progressAnalyzer.analyzeTaskProgress(taskId, processedPhotos);
             }
 
+            // Check for GPS auto-detection results
+            const gpsDetections = processedPhotos.filter(photo => 
+                photo.metadata && photo.metadata.gpsProjectDetection && photo.metadata.gpsProjectDetection.detected
+            );
+
+            let autoOrganizationSummary = null;
+            if (gpsDetections.length > 0) {
+                autoOrganizationSummary = {
+                    detected: gpsDetections.length,
+                    total: processedPhotos.length,
+                    projects: [...new Set(gpsDetections.map(p => p.metadata.gpsProjectDetection.project.name))],
+                    message: `${gpsDetections.length} photos automatically organized by GPS location`
+                };
+            }
+
             res.json({
                 success: true,
                 photos: processedPhotos,
                 count: processedPhotos.length,
-                message: 'Progress photos uploaded successfully'
+                autoOrganization: autoOrganizationSummary,
+                message: autoOrganizationSummary 
+                    ? `Progress photos uploaded and ${gpsDetections.length} automatically organized by GPS`
+                    : 'Progress photos uploaded successfully'
             });
         } catch (error) {
             console.error('Progress photos upload error:', error);
@@ -537,6 +564,114 @@ class FileManagementAPI {
         } catch (error) {
             console.error('Get task files error:', error);
             res.status(500).json({ error: 'Failed to get task files' });
+        }
+    }
+
+    // GPS-based project detection handlers
+    async handleGPSProjectDetection(req, res) {
+        try {
+            const { coordinates } = req.body;
+
+            if (!coordinates || !coordinates.latitude || !coordinates.longitude) {
+                return res.status(400).json({ 
+                    error: 'GPS coordinates are required',
+                    required: { latitude: 'number', longitude: 'number' }
+                });
+            }
+
+            const detection = await this.geoLocationManager.detectProjectFromGPS(coordinates);
+            
+            res.json({
+                success: true,
+                detection,
+                coordinates,
+                timestamp: new Date().toISOString()
+            });
+        } catch (error) {
+            console.error('GPS project detection error:', error);
+            res.status(500).json({ error: 'Failed to detect project from GPS coordinates' });
+        }
+    }
+
+    async handleAddProjectLocation(req, res) {
+        try {
+            const projectData = req.body;
+            
+            const requiredFields = ['projectId', 'name', 'address', 'coordinates'];
+            const missingFields = requiredFields.filter(field => !projectData[field]);
+            
+            if (missingFields.length > 0) {
+                return res.status(400).json({ 
+                    error: 'Missing required fields',
+                    required: requiredFields,
+                    missing: missingFields
+                });
+            }
+
+            const project = this.geoLocationManager.addProjectLocation(projectData);
+            
+            res.json({
+                success: true,
+                project,
+                message: 'Project location added successfully'
+            });
+        } catch (error) {
+            console.error('Add project location error:', error);
+            res.status(500).json({ error: 'Failed to add project location' });
+        }
+    }
+
+    async handleGetProjectLocations(req, res) {
+        try {
+            const locations = this.geoLocationManager.getAllProjectLocations();
+            
+            res.json({
+                success: true,
+                locations,
+                count: locations.length
+            });
+        } catch (error) {
+            console.error('Get project locations error:', error);
+            res.status(500).json({ error: 'Failed to get project locations' });
+        }
+    }
+
+    async handleUpdateProjectBoundaries(req, res) {
+        try {
+            const { projectId } = req.params;
+            const { radius } = req.body;
+
+            if (!radius || radius < 10 || radius > 1000) {
+                return res.status(400).json({ 
+                    error: 'Invalid radius. Must be between 10 and 1000 meters'
+                });
+            }
+
+            const project = this.geoLocationManager.updateProjectBoundaries(projectId, radius);
+            
+            res.json({
+                success: true,
+                project,
+                message: 'Project boundaries updated successfully'
+            });
+        } catch (error) {
+            console.error('Update project boundaries error:', error);
+            res.status(500).json({ error: 'Failed to update project boundaries' });
+        }
+    }
+
+    async handleGetLocationAnalytics(req, res) {
+        try {
+            const { projectId } = req.params;
+            const analytics = await this.geoLocationManager.getLocationAnalytics(projectId);
+            
+            res.json({
+                success: true,
+                analytics
+            });
+        } catch (error) {
+            console.error('Get location analytics error:', error);
+            res.status(500).json({ error: 'Failed to get location analytics' });
         }
     }
 

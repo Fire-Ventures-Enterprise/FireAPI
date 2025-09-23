@@ -595,9 +595,68 @@ class MicroservicesIntegration {
             }
         });
 
+        // 📍 GPS-Based Project Detection Routes - Revolutionary Auto-Organization
+        app.post('/api/files/gps/detect-project', async (req, res) => {
+            try {
+                const filesUrl = this.orchestrator.tradeServices.files;
+                const axios = require('axios');
+
+                const response = await axios.post(`${filesUrl}/gps/detect-project`, req.body, {
+                    headers: { 'Content-Type': 'application/json' },
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'gps_project_detection',
+                    service_url: filesUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] GPS project detection error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'GPS_DETECTION_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/files/gps/project-locations', async (req, res) => {
+            try {
+                const filesUrl = this.orchestrator.tradeServices.files;
+                const axios = require('axios');
+
+                const response = await axios.get(`${filesUrl}/gps/project-locations`, {
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'gps_location_management',
+                    service_url: filesUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Get project locations error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'PROJECT_LOCATIONS_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
         console.log('🎪 [MICROSERVICES] Routes added to main API');
         console.log('🎯 [TASK ORCHESTRATOR] Revolutionary task management integrated');
         console.log('📁 [FILE MANAGEMENT] Revolutionary file storage system integrated');
+        console.log('📍 [GPS AUTO-DETECTION] Location-based project organization enabled');
     }
 
     /**

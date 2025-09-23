@@ -4,10 +4,12 @@
  */
 
 const FireBuildAIServer = require('./server.js');
+const SEOAPIService = require('./seo-api.js');
 
 class APIRoutes {
     constructor() {
         this.server = new FireBuildAIServer();
+        this.seoService = new SEOAPIService();
         this.endpoints = this.defineEndpoints();
     }
 
@@ -152,6 +154,124 @@ class APIRoutes {
                 }
             },
 
+            // SEO API Suite - Custom SEO monitoring and analysis
+            'POST /api/seo/rankings': {
+                description: 'Track Google SERP keyword rankings with competitor analysis',
+                parameters: {
+                    required: ['domain', 'keywords'],
+                    optional: ['location', 'options'],
+                    example: {
+                        domain: "flooringhause.com",
+                        keywords: ["flooring toronto", "hardwood installation", "tile contractor"],
+                        location: "canada",
+                        options: {
+                            trackCompetitors: true,
+                            includeSearchVolume: true
+                        }
+                    }
+                },
+                response: {
+                    success: 'boolean',
+                    domain: 'string',
+                    totalKeywords: 'number',
+                    tracked: 'number',
+                    results: 'array',
+                    summary: 'object',
+                    historical: 'object'
+                }
+            },
+
+            'POST /api/seo/competitors': {
+                description: 'Comprehensive competitor website analysis and monitoring',
+                parameters: {
+                    required: ['targetDomain', 'competitorDomains'],
+                    optional: ['options'],
+                    example: {
+                        targetDomain: "yoursite.com",
+                        competitorDomains: ["competitor1.com", "competitor2.com", "competitor3.com"],
+                        options: {
+                            includeContent: true,
+                            includeTechnical: true,
+                            includePerformance: true
+                        }
+                    }
+                },
+                response: {
+                    success: 'boolean',
+                    targetDomain: 'string',
+                    competitorCount: 'number',
+                    results: 'array',
+                    comparative: 'object'
+                }
+            },
+
+            'POST /api/seo/backlinks': {
+                description: 'Monitor backlinks and referring domains with quality analysis',
+                parameters: {
+                    required: ['domain'],
+                    optional: ['options'],
+                    example: {
+                        domain: "yoursite.com",
+                        options: {
+                            includeNewLinks: true,
+                            qualityThreshold: 30,
+                            trackLostLinks: true
+                        }
+                    }
+                },
+                response: {
+                    success: 'boolean',
+                    domain: 'string',
+                    totalBacklinks: 'number',
+                    referringDomains: 'number',
+                    qualityScore: 'number',
+                    backlinks: 'array',
+                    newBacklinks: 'array',
+                    opportunities: 'array'
+                }
+            },
+
+            'POST /api/seo/audit': {
+                description: 'Complete technical SEO audit with recommendations',
+                parameters: {
+                    required: ['domain'],
+                    optional: ['options'],
+                    example: {
+                        domain: "yoursite.com",
+                        options: {
+                            includePerformance: true,
+                            includeMobile: true,
+                            includeAccessibility: true
+                        }
+                    }
+                },
+                response: {
+                    success: 'boolean',
+                    domain: 'string',
+                    overallScore: 'number',
+                    crawlability: 'object',
+                    performance: 'object',
+                    mobileOptimization: 'object',
+                    security: 'object',
+                    recommendations: 'array'
+                }
+            },
+
+            'GET /api/seo/integration': {
+                description: 'Get Lovable integration code and examples',
+                parameters: {
+                    optional: ['framework'],
+                    example: {
+                        framework: "react"
+                    }
+                },
+                response: {
+                    integrationCode: 'object',
+                    examples: 'object',
+                    documentation: 'string'
+                }
+            },
+
             // Utility Endpoints
             'GET /api/health': {
                 description: 'Check API health status and component availability',
@@ -183,8 +303,16 @@ class APIRoutes {
             // Add rate limiting check (stub for now)
             await this.checkRateLimit(headers);
 
-            // Route to server handler
-            const response = await this.server.handleRequest(method, path, body, query);
+            // Route to appropriate handler
+            let response;
+            
+            // SEO API routes
+            if (path.startsWith('/api/seo/')) {
+                response = await this.handleSEORequest(method, path, body, query);
+            } else {
+                // Construction API routes
+                response = await this.server.handleRequest(method, path, body, query);
+            }
             
             console.log(`✅ [${requestId}] Request completed successfully`);
             return {
@@ -391,6 +519,361 @@ class APIRoutes {
             successful: results.filter(r => r.success).length,
             failed: results.filter(r => !r.success).length,
             results
+        };
+    }
+
+    /**
+     * Handle SEO API requests
+     */
+    async handleSEORequest(method, path, body, query) {
+        try {
+            console.log(`🔍 SEO API Request: ${method} ${path}`);
+            
+            switch (`${method} ${path}`) {
+                case 'POST /api/seo/rankings':
+                    return await this.seoService.trackKeywordRankings(
+                        body.domain,
+                        body.keywords,
+                        body.location || 'canada',
+                        body.options || {}
+                    );
+
+                case 'POST /api/seo/competitors':
+                    return await this.seoService.analyzeCompetitors(
+                        body.targetDomain,
+                        body.competitorDomains,
+                        body.options || {}
+                    );
+
+                case 'POST /api/seo/backlinks':
+                    return await this.seoService.monitorBacklinks(
+                        body.domain,
+                        body.options || {}
+                    );
+
+                case 'POST /api/seo/audit':
+                    return await this.seoService.auditTechnicalSEO(
+                        body.domain,
+                        body.options || {}
+                    );
+
+                case 'GET /api/seo/integration':
+                    return this.generateSEOIntegrationGuide(query.framework);
+
+                default:
+                    throw new Error(`SEO endpoint not implemented: ${method} ${path}`);
+            }
+        } catch (error) {
+            console.error(`❌ SEO API Error:`, error);
+            return {
+                success: false,
+                error: error.message,
+                timestamp: new Date().toISOString()
+            };
+        }
+    }
+
+    /**
+     * Generate SEO integration guide for Lovable
+     */
+    generateSEOIntegrationGuide(framework = 'react') {
+        const apiKey = 'YOUR_FIREAPI_KEY'; // Would be actual API key
+        const integrationCode = this.seoService.generateLovableIntegrationCode(apiKey, this.endpoints);
+        
+        return {
+            success: true,
+            framework,
+            integrationCode,
+            examples: {
+                dashboardComponent: `
+// SEO Dashboard Component for Lovable
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+const SEODashboard = () => {
+  const [seoData, setSeoData] = useState({
+    rankings: null,
+    competitors: null,
+    backlinks: null,
+    audit: null
+  });
+  const [loading, setLoading] = useState(true);
+
+  const apiKey = process.env.NEXT_PUBLIC_FIREAPI_KEY;
+
+  useEffect(() => {
+    loadSEOData();
+  }, []);
+
+  const loadSEOData = async () => {
+    try {
+      setLoading(true);
+      
+      // Load all SEO data in parallel
+      const [rankings, competitors, backlinks, audit] = await Promise.all([
+        trackKeywords(),
+        analyzeCompetitors(),
+        monitorBacklinks(),
+        runSEOAudit()
+      ]);
+
+      setSeoData({ rankings, competitors, backlinks, audit });
+    } catch (error) {
+      console.error('Failed to load SEO data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  ${integrationCode.keywordTracking}
+
+  ${integrationCode.competitorMonitoring}
+
+  ${integrationCode.backlinkMonitoring}
+
+  ${integrationCode.technicalAudit}
+
+  if (loading) {
+    return <div className="p-6">Loading SEO dashboard...</div>;
+  }
+
+  return (
+    <div className="p-6 space-y-6">
+      <h1 className="text-3xl font-bold">SEO Performance Dashboard</h1>
+      
+      {/* Rankings Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Keywords Tracked</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {seoData.rankings?.totalKeywords || 0}
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Top 10 Rankings</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {seoData.rankings?.summary?.topTen || 0}
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Quality Backlinks</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {seoData.backlinks?.totalBacklinks || 0}
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>SEO Score</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">
+              {seoData.audit?.overallScore || 0}/100
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Keyword Rankings Chart */}
+      {seoData.rankings && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Keyword Position Trends</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={seoData.rankings.results}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="keyword" />
+                  <YAxis reversed domain={[1, 100]} />
+                  <Tooltip />
+                  <Line 
+                    type="monotone" 
+                    dataKey="position" 
+                    stroke="#8884d8" 
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Competitor Analysis */}
+      {seoData.competitors && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Competitor Analysis</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {seoData.competitors.results.map(competitor => (
+                <div key={competitor.domain} className="flex justify-between items-center p-3 border rounded">
+                  <div>
+                    <div className="font-medium">{competitor.domain}</div>
+                    <div className="text-sm text-gray-500">
+                      {competitor.competitive?.weaknesses?.length || 0} weaknesses found
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-bold">{competitor.competitive?.strengthScore || 0}/100</div>
+                    <div className="text-sm text-gray-500">Strength Score</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* SEO Recommendations */}
+      {seoData.audit?.recommendations && (
+        <Card>
+          <CardHeader>
+            <CardTitle>SEO Recommendations</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {seoData.audit.recommendations.slice(0, 5).map((rec, index) => (
+                <div key={index} className="p-3 border rounded">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-medium">{rec.issue}</div>
+                      <div className="text-sm text-gray-600">{rec.solution}</div>
+                    </div>
+                    <span className={\`px-2 py-1 rounded text-xs \${
+                      rec.priority === 'critical' ? 'bg-red-100 text-red-800' :
+                      rec.priority === 'high' ? 'bg-orange-100 text-orange-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }\`}>
+                      {rec.priority}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+};
+
+export default SEODashboard;`,
+                
+                hookExample: `
+// Custom hook for SEO data
+import { useState, useEffect } from 'react';
+
+export const useSEOData = (domain, options = {}) => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const apiKey = process.env.NEXT_PUBLIC_FIREAPI_KEY;
+
+  const refreshData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch('https://fireapi.dev/api/seo/audit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': \`Bearer \${apiKey}\`
+        },
+        body: JSON.stringify({ domain, options })
+      });
+
+      if (!response.ok) {
+        throw new Error(\`SEO API error: \${response.status}\`);
+      }
+
+      const result = await response.json();
+      setData(result);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (domain) {
+      refreshData();
+    }
+  }, [domain]);
+
+  return { data, loading, error, refresh: refreshData };
+};`
+            },
+            documentation: `
+# FireAPI SEO Integration for Lovable
+
+## Quick Start
+
+1. **Install Dependencies**
+   \`\`\`bash
+   npm install recharts
+   \`\`\`
+
+2. **Set Environment Variables**
+   \`\`\`env
+   NEXT_PUBLIC_FIREAPI_KEY=your_api_key_here
+   \`\`\`
+
+3. **Import and Use Components**
+   \`\`\`jsx
+   import SEODashboard from './components/SEODashboard';
+   
+   export default function Dashboard() {
+     return <SEODashboard />;
+   }
+   \`\`\`
+
+## API Endpoints Available
+
+- **POST /api/seo/rankings** - Track keyword positions
+- **POST /api/seo/competitors** - Analyze competitor sites  
+- **POST /api/seo/backlinks** - Monitor backlink profile
+- **POST /api/seo/audit** - Technical SEO audit
+
+## Rate Limits
+
+- Keyword tracking: 5 requests per 15 minutes
+- Competitor analysis: 3 requests per 15 minutes  
+- Backlink monitoring: 2 requests per 15 minutes
+- Technical audit: 2 requests per 15 minutes
+
+## Custom Features for Flooring Industry
+
+- **Local Toronto market focus**
+- **Competitor tracking for flooring keywords**
+- **Technical audit for e-commerce sites**
+- **Backlink opportunities in construction industry**
+
+## Advanced Usage
+
+See the integration code examples above for complete dashboard implementation.
+`
         };
     }
 

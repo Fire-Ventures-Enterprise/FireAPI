@@ -21,7 +21,10 @@ class MicroservicesIntegration {
             plumbing: process.env.PLUMBING_API_URL || 'http://localhost:3003',
             painting: process.env.PAINTING_API_URL || 'http://localhost:3004',
             flooring: process.env.FLOORING_API_URL || 'http://localhost:3005',
-            hvac: process.env.HVAC_API_URL || 'http://localhost:3006'
+            hvac: process.env.HVAC_API_URL || 'http://localhost:3006',
+            compliance: process.env.COMPLIANCE_API_URL || 'http://localhost:3007',
+            tasks: process.env.TASKS_API_URL || 'http://localhost:3008',
+            files: process.env.FILES_API_URL || 'http://localhost:3009'
         };
 
         console.log('🔧 [MICROSERVICES] Service URLs configured:');
@@ -294,7 +297,307 @@ class MicroservicesIntegration {
             }
         });
 
+        // Building Code Compliance endpoints
+        app.post('/api/compliance/check', async (req, res) => {
+            try {
+                const complianceUrl = this.orchestrator.tradeServices.compliance;
+                const axios = require('axios');
+
+                const response = await axios.post(`${complianceUrl}/check`, req.body, {
+                    timeout: 30000,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'building_code_compliance',
+                    service_url: complianceUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Compliance check error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'COMPLIANCE_SERVICE_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.post('/api/compliance/kitchen', async (req, res) => {
+            try {
+                const complianceUrl = this.orchestrator.tradeServices.compliance;
+                const axios = require('axios');
+
+                const response = await axios.post(`${complianceUrl}/kitchen`, req.body, {
+                    timeout: 30000,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'kitchen_code_compliance',
+                    service_url: complianceUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Kitchen compliance error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'COMPLIANCE_SERVICE_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/compliance/violations', async (req, res) => {
+            try {
+                const complianceUrl = this.orchestrator.tradeServices.compliance;
+                const axios = require('axios');
+
+                const response = await axios.get(`${complianceUrl}/violations`, {
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'violation_statistics',
+                    service_url: complianceUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Violations stats error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'COMPLIANCE_SERVICE_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        // 🎯 Task Orchestrator Routes - Revolutionary Construction Task Management
+        app.post('/api/tasks/project', async (req, res) => {
+            try {
+                const tasksUrl = this.orchestrator.tradeServices.tasks;
+                const axios = require('axios');
+
+                const response = await axios.post(`${tasksUrl}/project`, req.body, {
+                    headers: { 'Content-Type': 'application/json' },
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'intelligent_task_orchestration',
+                    service_url: tasksUrl,
+                    features: ['dependency_tracking', 'weather_integration', 'trade_coordination', 'critical_path']
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Task orchestrator error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'TASK_ORCHESTRATOR_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/tasks/project/:projectId', async (req, res) => {
+            try {
+                const tasksUrl = this.orchestrator.tradeServices.tasks;
+                const { projectId } = req.params;
+                const axios = require('axios');
+
+                const response = await axios.get(`${tasksUrl}/project/${projectId}`, {
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'project_status_tracking',
+                    service_url: tasksUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Task project retrieval error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'TASK_PROJECT_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/tasks/project/:projectId/timeline', async (req, res) => {
+            try {
+                const tasksUrl = this.orchestrator.tradeServices.tasks;
+                const { projectId } = req.params;
+                const axios = require('axios');
+
+                const response = await axios.get(`${tasksUrl}/project/${projectId}/timeline`, {
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'construction_timeline_optimization',
+                    service_url: tasksUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Task timeline error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'TASK_TIMELINE_ERROR', 
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/tasks/project/:projectId/next-actions', async (req, res) => {
+            try {
+                const tasksUrl = this.orchestrator.tradeServices.tasks;
+                const { projectId } = req.params;
+                const axios = require('axios');
+
+                const response = await axios.get(`${tasksUrl}/project/${projectId}/next-actions`, {
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'actionable_task_intelligence',
+                    service_url: tasksUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Next actions error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'NEXT_ACTIONS_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        // 📁 File Management Routes - Revolutionary Construction File Storage
+        app.post('/api/files/upload/single', async (req, res) => {
+            try {
+                const filesUrl = this.orchestrator.tradeServices.files;
+                const axios = require('axios');
+
+                // Forward multipart form data to file service
+                const response = await axios.post(`${filesUrl}/upload/single`, req.body, {
+                    headers: { 
+                        'Content-Type': req.headers['content-type']
+                    },
+                    timeout: 60000 // Longer timeout for file uploads
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'construction_file_management',
+                    service_url: filesUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] File upload error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'FILE_UPLOAD_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/files/project/:projectId/files', async (req, res) => {
+            try {
+                const filesUrl = this.orchestrator.tradeServices.files;
+                const { projectId } = req.params;
+                const axios = require('axios');
+
+                const queryParams = new URLSearchParams(req.query).toString();
+                const url = `${filesUrl}/project/${projectId}/files${queryParams ? '?' + queryParams : ''}`;
+
+                const response = await axios.get(url, {
+                    timeout: 10000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'project_file_organization',
+                    service_url: filesUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] Get project files error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'PROJECT_FILES_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
+        app.get('/api/files/categories', async (req, res) => {
+            try {
+                const filesUrl = this.orchestrator.tradeServices.files;
+                const axios = require('axios');
+
+                const response = await axios.get(`${filesUrl}/categories`, {
+                    timeout: 5000
+                });
+
+                res.json({
+                    success: true,
+                    data: response.data,
+                    specialization: 'file_categorization_system',
+                    service_url: filesUrl
+                });
+
+            } catch (error) {
+                console.error('❌ [API] File categories error:', error.message);
+                res.status(error.response?.status || 500).json({
+                    success: false,
+                    error: {
+                        code: 'FILE_CATEGORIES_ERROR',
+                        message: error.message
+                    }
+                });
+            }
+        });
+
         console.log('🎪 [MICROSERVICES] Routes added to main API');
+        console.log('🎯 [TASK ORCHESTRATOR] Revolutionary task management integrated');
+        console.log('📁 [FILE MANAGEMENT] Revolutionary file storage system integrated');
     }
 
     /**
@@ -345,6 +648,9 @@ class MicroservicesIntegration {
                 electrical_kitchen: '/api/electrical/kitchen',
                 electrical_circuits: '/api/electrical/circuits', 
                 electrical_lighting: '/api/electrical/lighting',
+                compliance_check: '/api/compliance/check',
+                compliance_kitchen: '/api/compliance/kitchen',
+                compliance_violations: '/api/compliance/violations',
                 // Future: plumbing, painting endpoints
             },
             production_ready: true,

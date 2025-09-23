@@ -5,11 +5,13 @@
 
 const FireBuildAIServer = require('./server.js');
 const SEOAPIService = require('./seo-api.js');
+const RoomVisualizerAPI = require('./room-visualizer-api.js');
 
 class APIRoutes {
     constructor() {
         this.server = new FireBuildAIServer();
         this.seoService = new SEOAPIService();
+        this.visualizerService = new RoomVisualizerAPI();
         this.endpoints = this.defineEndpoints();
     }
 
@@ -272,6 +274,96 @@ class APIRoutes {
                 }
             },
 
+            // Room Visualizer API Suite - Revolutionary material preview and room transformation
+            'POST /api/visualizer/flooring-backsplash': {
+                description: 'Transform room images with realistic flooring and backsplash materials',
+                parameters: {
+                    required: ['imageUrl'],
+                    optional: ['flooring', 'backsplash', 'options'],
+                    example: {
+                        imageUrl: "https://example.com/kitchen.jpg",
+                        flooring: "hardwood_oak_natural",
+                        backsplash: "mosaic_glass_azure",
+                        options: {
+                            includeRecommendations: true,
+                            includePricing: true,
+                            realism: "high"
+                        }
+                    }
+                },
+                response: {
+                    success: 'boolean',
+                    processedImage: 'object',
+                    surfaceAnalysis: 'object',
+                    appliedMaterials: 'object',
+                    recommendations: 'object',
+                    pricing: 'object',
+                    roomDimensions: 'object'
+                }
+            },
+
+            'POST /api/visualizer/paint-colors': {
+                description: 'Transform room walls with realistic paint color visualization',
+                parameters: {
+                    required: ['imageUrl', 'paintOptions'],
+                    optional: ['options'],
+                    example: {
+                        imageUrl: "https://example.com/living-room.jpg",
+                        paintOptions: {
+                            "wall_main": "#3498DB",
+                            "wall_accent": "#E74C3C"
+                        },
+                        options: {
+                            includeColorHarmony: true,
+                            includeMoodAnalysis: true,
+                            includePaintCalc: true
+                        }
+                    }
+                },
+                response: {
+                    success: 'boolean',
+                    processedImage: 'object',
+                    wallAnalysis: 'object',
+                    appliedColors: 'object',
+                    colorRecommendations: 'object',
+                    paintCalculations: 'object',
+                    roomAmbiance: 'object'
+                }
+            },
+
+            'GET /api/visualizer/materials': {
+                description: 'Get available flooring, backsplash, and paint materials catalog',
+                parameters: {
+                    optional: ['category', 'brand', 'priceRange'],
+                    example: {
+                        category: "flooring",
+                        brand: "Premium Hardwood Co.",
+                        priceRange: "5-15"
+                    }
+                },
+                response: {
+                    materials: 'object',
+                    categories: 'array',
+                    brands: 'array',
+                    priceRanges: 'object'
+                }
+            },
+
+            'GET /api/visualizer/integration': {
+                description: 'Get Lovable integration components for room visualization',
+                parameters: {
+                    optional: ['type'],
+                    example: {
+                        type: "complete_visualizer"
+                    }
+                },
+                response: {
+                    components: 'object',
+                    examples: 'object',
+                    documentation: 'string'
+                }
+            },
+
             // Utility Endpoints
             'GET /api/health': {
                 description: 'Check API health status and component availability',
@@ -309,7 +401,12 @@ class APIRoutes {
             // SEO API routes
             if (path.startsWith('/api/seo/')) {
                 response = await this.handleSEORequest(method, path, body, query);
-            } else {
+            } 
+            // Room Visualizer API routes
+            else if (path.startsWith('/api/visualizer/')) {
+                response = await this.handleVisualizerRequest(method, path, body, query);
+            } 
+            else {
                 // Construction API routes
                 response = await this.server.handleRequest(method, path, body, query);
             }
@@ -571,6 +668,807 @@ class APIRoutes {
                 timestamp: new Date().toISOString()
             };
         }
+    }
+
+    /**
+     * Handle Room Visualizer API requests
+     */
+    async handleVisualizerRequest(method, path, body, query) {
+        try {
+            console.log(`🏠 Visualizer API Request: ${method} ${path}`);
+            
+            switch (`${method} ${path}`) {
+                case 'POST /api/visualizer/flooring-backsplash':
+                    return await this.visualizerService.visualizeFlooringAndBacksplash(
+                        body.imageUrl,
+                        {
+                            flooring: body.flooring,
+                            backsplash: body.backsplash,
+                            options: body.options || {}
+                        }
+                    );
+
+                case 'POST /api/visualizer/paint-colors':
+                    return await this.visualizerService.visualizePaintColors(
+                        body.imageUrl,
+                        body.paintOptions || {}
+                    );
+
+                case 'GET /api/visualizer/materials':
+                    return this.generateMaterialsCatalog(query);
+
+                case 'GET /api/visualizer/integration':
+                    return this.generateVisualizerIntegrationGuide(query.type);
+
+                default:
+                    throw new Error(`Visualizer endpoint not implemented: ${method} ${path}`);
+            }
+        } catch (error) {
+            console.error(`❌ Visualizer API Error:`, error);
+            return {
+                success: false,
+                error: error.message,
+                timestamp: new Date().toISOString()
+            };
+        }
+    }
+
+    /**
+     * Generate materials catalog for API consumption
+     */
+    generateMaterialsCatalog(query = {}) {
+        const library = this.visualizerService.materialLibrary;
+        const { category, brand, priceRange } = query;
+
+        let materials = { ...library };
+
+        // Filter by category
+        if (category && materials[category]) {
+            materials = { [category]: materials[category] };
+        }
+
+        // Filter by brand
+        if (brand) {
+            Object.keys(materials).forEach(cat => {
+                Object.keys(materials[cat]).forEach(type => {
+                    Object.keys(materials[cat][type]).forEach(item => {
+                        if (materials[cat][type][item].brand !== brand) {
+                            delete materials[cat][type][item];
+                        }
+                    });
+                });
+            });
+        }
+
+        // Filter by price range
+        if (priceRange) {
+            const [min, max] = priceRange.split('-').map(Number);
+            Object.keys(materials).forEach(cat => {
+                Object.keys(materials[cat]).forEach(type => {
+                    Object.keys(materials[cat][type]).forEach(item => {
+                        const price = materials[cat][type][item].price;
+                        if (price < min || price > max) {
+                            delete materials[cat][type][item];
+                        }
+                    });
+                });
+            });
+        }
+
+        // Generate summary data
+        const categories = Object.keys(library);
+        const brands = new Set();
+        const prices = [];
+
+        Object.values(library).forEach(category => {
+            Object.values(category).forEach(type => {
+                Object.values(type).forEach(material => {
+                    brands.add(material.brand);
+                    prices.push(material.price);
+                });
+            });
+        });
+
+        return {
+            success: true,
+            materials,
+            categories,
+            brands: Array.from(brands),
+            priceRanges: {
+                min: Math.min(...prices),
+                max: Math.max(...prices),
+                average: prices.reduce((a, b) => a + b, 0) / prices.length
+            },
+            totalMaterials: Object.values(materials).reduce((total, cat) => {
+                return total + Object.values(cat).reduce((catTotal, type) => {
+                    return catTotal + Object.keys(type).length;
+                }, 0);
+            }, 0)
+        };
+    }
+
+    /**
+     * Generate Lovable integration guide for Room Visualizer
+     */
+    generateVisualizerIntegrationGuide(type = 'complete_visualizer') {
+        return {
+            success: true,
+            type,
+            components: this.generateVisualizerComponents(),
+            examples: this.generateVisualizerExamples(),
+            documentation: this.generateVisualizerDocumentation()
+        };
+    }
+
+    generateVisualizerComponents() {
+        return {
+            flooringVisualizer: `
+// Flooring & Backsplash Visualizer Component for Lovable
+import React, { useState, useRef } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+const FlooringVisualizer = () => {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [processing, setProcessing] = useState(false);
+  const [result, setResult] = useState(null);
+  const [selectedFlooring, setSelectedFlooring] = useState('hardwood_oak_natural');
+  const [selectedBacksplash, setSelectedBacksplash] = useState('mosaic_glass_azure');
+  const fileInputRef = useRef(null);
+
+  const apiKey = process.env.NEXT_PUBLIC_FIREAPI_KEY;
+  const apiBase = 'https://fireapi.dev';
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => setSelectedImage(e.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const processVisualization = async () => {
+    if (!selectedImage) return;
+
+    setProcessing(true);
+    try {
+      const response = await fetch(\`\${apiBase}/api/visualizer/flooring-backsplash\`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey
+        },
+        body: JSON.stringify({
+          imageUrl: selectedImage,
+          flooring: selectedFlooring,
+          backsplash: selectedBacksplash,
+          options: {
+            includeRecommendations: true,
+            includePricing: true,
+            realism: 'high'
+          }
+        })
+      });
+
+      const data = await response.json();
+      setResult(data);
+    } catch (error) {
+      console.error('Visualization failed:', error);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6 p-6">
+      <h2 className="text-2xl font-bold">🏠 Room Visualizer - Flooring & Backsplash</h2>
+      
+      {/* Image Upload */}
+      <Card>
+        <CardHeader>
+          <CardTitle>1. Upload Room Image</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <Button onClick={() => fileInputRef.current?.click()}>
+              📸 Select Room Photo
+            </Button>
+            <input 
+              ref={fileInputRef}
+              type="file" 
+              accept="image/*" 
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+            {selectedImage && (
+              <img 
+                src={selectedImage} 
+                alt="Room to visualize"
+                className="w-full max-w-md h-auto rounded-lg border"
+              />
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Material Selection */}
+      <Card>
+        <CardHeader>
+          <CardTitle>2. Choose Materials</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Flooring Material</label>
+              <select 
+                value={selectedFlooring}
+                onChange={(e) => setSelectedFlooring(e.target.value)}
+                className="w-full p-2 border rounded"
+              >
+                <option value="hardwood_oak_natural">Natural Oak Hardwood - $8.50/sq ft</option>
+                <option value="hardwood_maple_honey">Honey Maple Hardwood - $9.25/sq ft</option>
+                <option value="hardwood_walnut_dark">Dark Walnut Hardwood - $12.75/sq ft</option>
+                <option value="laminate_gray_oak">Gray Oak Laminate - $3.25/sq ft</option>
+                <option value="tile_marble_carrara">Carrara Marble Tile - $15.50/sq ft</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">Backsplash Material</label>
+              <select 
+                value={selectedBacksplash}
+                onChange={(e) => setSelectedBacksplash(e.target.value)}
+                className="w-full p-2 border rounded"
+              >
+                <option value="mosaic_glass_azure">Trusa Azure Glass Mosaic - $18.75/sq ft</option>
+                <option value="subway_white_classic">Classic White Subway - $4.25/sq ft</option>
+                <option value="mosaic_stone_natural">Trusa Natural Stone Mosaic - $22.95/sq ft</option>
+                <option value="ceramic_herringbone_white">White Herringbone Ceramic - $12.25/sq ft</option>
+              </select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Process Button */}
+      <div className="flex justify-center">
+        <Button 
+          onClick={processVisualization}
+          disabled={!selectedImage || processing}
+          className="px-8 py-3 text-lg"
+        >
+          {processing ? '🔄 Processing...' : '✨ Visualize Room Transformation'}
+        </Button>
+      </div>
+
+      {/* Results */}
+      {result && result.success && (
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>✨ Your Transformed Room</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <img 
+                src={result.processedImage.url}
+                alt="Transformed room"
+                className="w-full max-w-2xl h-auto rounded-lg border shadow-lg"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Room Analysis */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Room Dimensions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div>Area: {result.roomDimensions?.roomArea} sq ft</div>
+                  <div>Floor Area: {result.surfaceAnalysis?.floor?.area} sq ft</div>
+                  <div>Room Type: {result.surfaceAnalysis?.roomType}</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Applied Materials</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="font-medium">Flooring:</div>
+                  <div className="text-sm">{result.materialDetails?.flooring?.name}</div>
+                  <div className="font-medium mt-2">Backsplash:</div>
+                  <div className="text-sm">{result.materialDetails?.backsplash?.name}</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Estimated Cost</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {result.pricing?.flooring && (
+                    <div>
+                      <div className="font-medium">Flooring: $\{result.pricing.flooring.total.toLocaleString()}</div>
+                      <div className="text-sm text-gray-600">
+                        Material + Installation
+                      </div>
+                    </div>
+                  )}
+                  {result.pricing?.backsplash && (
+                    <div>
+                      <div className="font-medium">Backsplash: $\{result.pricing.backsplash.total.toLocaleString()}</div>
+                      <div className="text-sm text-gray-600">
+                        Material + Installation
+                      </div>
+                    </div>
+                  )}
+                  <div className="border-t pt-2">
+                    <div className="text-lg font-bold">
+                      Total: $\{result.pricing?.total?.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Recommendations */}
+          {result.recommendations && (
+            <Card>
+              <CardHeader>
+                <CardTitle>💡 Material Recommendations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {result.recommendations.combinations?.map((combo, index) => (
+                    <div key={index} className="p-3 border rounded">
+                      <div className="font-medium">{combo.style}</div>
+                      <div className="text-sm text-gray-600">
+                        {combo.flooring} + {combo.backsplash}
+                      </div>
+                      <div className="text-xs text-green-600">
+                        Popularity: {combo.popularity}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FlooringVisualizer;`,
+
+            paintVisualizer: `
+// Paint Color Visualizer Component for Lovable
+import React, { useState, useRef } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+const PaintVisualizer = () => {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [processing, setProcessing] = useState(false);
+  const [result, setResult] = useState(null);
+  const [paintColors, setPaintColors] = useState({
+    wall_main: '#3498DB',
+    wall_accent: '#E74C3C'
+  });
+  const fileInputRef = useRef(null);
+
+  const apiKey = process.env.NEXT_PUBLIC_FIREAPI_KEY;
+  const apiBase = 'https://fireapi.dev';
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => setSelectedImage(e.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const processVisualization = async () => {
+    if (!selectedImage) return;
+
+    setProcessing(true);
+    try {
+      const response = await fetch(\`\${apiBase}/api/visualizer/paint-colors\`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey
+        },
+        body: JSON.stringify({
+          imageUrl: selectedImage,
+          paintOptions: paintColors,
+          options: {
+            includeColorHarmony: true,
+            includeMoodAnalysis: true,
+            includePaintCalc: true
+          }
+        })
+      });
+
+      const data = await response.json();
+      setResult(data);
+    } catch (error) {
+      console.error('Paint visualization failed:', error);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const popularColors = [
+    { name: 'Ocean Blue', hex: '#3498DB' },
+    { name: 'Warm Red', hex: '#E74C3C' },
+    { name: 'Forest Green', hex: '#27AE60' },
+    { name: 'Sunset Orange', hex: '#F39C12' },
+    { name: 'Royal Purple', hex: '#9B59B6' },
+    { name: 'Slate Gray', hex: '#34495E' },
+    { name: 'Cream White', hex: '#F8F9FA' },
+    { name: 'Charcoal', hex: '#2C3E50' }
+  ];
+
+  return (
+    <div className="space-y-6 p-6">
+      <h2 className="text-2xl font-bold">🎨 Paint Color Visualizer</h2>
+      
+      {/* Image Upload */}
+      <Card>
+        <CardHeader>
+          <CardTitle>1. Upload Room Image</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <Button onClick={() => fileInputRef.current?.click()}>
+              📸 Select Room Photo
+            </Button>
+            <input 
+              ref={fileInputRef}
+              type="file" 
+              accept="image/*" 
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+            {selectedImage && (
+              <img 
+                src={selectedImage} 
+                alt="Room to paint"
+                className="w-full max-w-md h-auto rounded-lg border"
+              />
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Color Selection */}
+      <Card>
+        <CardHeader>
+          <CardTitle>2. Choose Paint Colors</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Main Wall Color</label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="color"
+                    value={paintColors.wall_main}
+                    onChange={(e) => setPaintColors({...paintColors, wall_main: e.target.value})}
+                    className="w-16 h-10 rounded border"
+                  />
+                  <input
+                    type="text"
+                    value={paintColors.wall_main}
+                    onChange={(e) => setPaintColors({...paintColors, wall_main: e.target.value})}
+                    className="flex-1 p-2 border rounded"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Accent Wall Color</label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="color"
+                    value={paintColors.wall_accent}
+                    onChange={(e) => setPaintColors({...paintColors, wall_accent: e.target.value})}
+                    className="w-16 h-10 rounded border"
+                  />
+                  <input
+                    type="text"
+                    value={paintColors.wall_accent}
+                    onChange={(e) => setPaintColors({...paintColors, wall_accent: e.target.value})}
+                    className="flex-1 p-2 border rounded"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Popular Colors */}
+            <div>
+              <div className="text-sm font-medium mb-2">Popular Colors</div>
+              <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+                {popularColors.map((color, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setPaintColors({...paintColors, wall_main: color.hex})}
+                    className="w-12 h-12 rounded border-2 border-gray-300 hover:border-gray-500"
+                    style={{ backgroundColor: color.hex }}
+                    title={color.name}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Process Button */}
+      <div className="flex justify-center">
+        <Button 
+          onClick={processVisualization}
+          disabled={!selectedImage || processing}
+          className="px-8 py-3 text-lg"
+        >
+          {processing ? '🔄 Processing...' : '🎨 Visualize Paint Colors'}
+        </Button>
+      </div>
+
+      {/* Results */}
+      {result && result.success && (
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>🎨 Your Painted Room</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <img 
+                src={result.processedImage.url}
+                alt="Painted room"
+                className="w-full max-w-2xl h-auto rounded-lg border shadow-lg"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Room Ambiance Analysis */}
+          {result.roomAmbiance && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Room Ambiance</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div>Mood: <span className="font-medium">{result.roomAmbiance.overall}</span></div>
+                    <div>Brightness: <span className="font-medium">{result.roomAmbiance.brightness}</span></div>
+                    <div>Temperature: <span className="font-medium">{result.roomAmbiance.temperature}</span></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Paint Requirements</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div>Total Area: {result.paintCalculations?.totalArea} sq ft</div>
+                    <div>Paint Needed: {Object.values(result.paintCalculations?.paintNeeded || {}).reduce((sum, p) => sum + p.gallons, 0)} gallons</div>
+                    <div>Labor Hours: {result.paintCalculations?.laborHours}</div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Total Cost</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div>Materials: $\{(result.paintCalculations?.totalCost - result.paintCalculations?.laborCost)?.toLocaleString()}</div>
+                    <div>Labor: $\{result.paintCalculations?.laborCost?.toLocaleString()}</div>
+                    <div className="border-t pt-2">
+                      <div className="text-lg font-bold">
+                        Total: $\{result.paintCalculations?.totalCost?.toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Color Recommendations */}
+          {result.colorRecommendations && (
+            <Card>
+              <CardHeader>
+                <CardTitle>🎯 Color Harmony Recommendations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {result.colorRecommendations.complementary?.map((rec, index) => (
+                    <div key={index} className="p-3 border rounded">
+                      <div className="flex items-center space-x-4">
+                        <div 
+                          className="w-8 h-8 rounded border"
+                          style={{ backgroundColor: rec.baseColor }}
+                        />
+                        <div 
+                          className="w-8 h-8 rounded border"
+                          style={{ backgroundColor: rec.complement }}
+                        />
+                        <div>
+                          <div className="font-medium">Complementary Pairing</div>
+                          <div className="text-sm text-gray-600">{rec.use}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PaintVisualizer;`
+        };
+    }
+
+    generateVisualizerExamples() {
+        return {
+            quickFlooringChange: `
+// Quick flooring visualization example
+const visualizeFlooring = async (imageFile, flooringType) => {
+  const formData = new FormData();
+  formData.append('image', imageFile);
+  
+  const response = await fetch('/api/visualizer/flooring-backsplash', {
+    method: 'POST',
+    headers: { 'X-API-Key': apiKey },
+    body: JSON.stringify({
+      imageUrl: await convertToBase64(imageFile),
+      flooring: flooringType,
+      options: { realism: 'high' }
+    })
+  });
+  
+  return response.json();
+};`,
+
+            paintColorPreview: `
+// Paint color preview with multiple walls
+const previewPaintColors = async (roomImage, colorScheme) => {
+  const response = await fetch('/api/visualizer/paint-colors', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': apiKey
+    },
+    body: JSON.stringify({
+      imageUrl: roomImage,
+      paintOptions: {
+        wall_main: colorScheme.primary,
+        wall_accent: colorScheme.accent,
+        wall_left: colorScheme.secondary
+      }
+    })
+  });
+  
+  return response.json();
+};`,
+
+            materialBrowser: `
+// Browse available materials
+const getMaterials = async (category = 'flooring') => {
+  const response = await fetch(\`/api/visualizer/materials?category=\${category}\`);
+  const data = await response.json();
+  
+  return data.materials[category];
+};`
+        };
+    }
+
+    generateVisualizerDocumentation() {
+        return `
+# Room Visualizer API Integration Guide
+
+## Overview
+The Room Visualizer API provides powerful material preview and room transformation capabilities for Lovable projects.
+
+## API Endpoints
+
+### 1. Flooring & Backsplash Visualizer
+**POST /api/visualizer/flooring-backsplash**
+
+Transform room images with realistic material overlays.
+
+**Parameters:**
+- \`imageUrl\` (required): Base64 data URL or image URL
+- \`flooring\` (optional): Flooring material ID
+- \`backsplash\` (optional): Backsplash material ID
+- \`options\` (optional): Visualization options
+
+### 2. Paint Color Visualizer  
+**POST /api/visualizer/paint-colors**
+
+Apply realistic paint colors to room walls.
+
+**Parameters:**
+- \`imageUrl\` (required): Room image to transform
+- \`paintOptions\` (required): Object with wall IDs and hex colors
+
+### 3. Materials Catalog
+**GET /api/visualizer/materials**
+
+Get available materials for visualization.
+
+## Material IDs
+
+### Flooring Materials
+- \`hardwood_oak_natural\` - Natural Oak Hardwood ($8.50/sq ft)
+- \`hardwood_maple_honey\` - Honey Maple Hardwood ($9.25/sq ft) 
+- \`hardwood_walnut_dark\` - Dark Walnut Hardwood ($12.75/sq ft)
+- \`laminate_gray_oak\` - Gray Oak Laminate ($3.25/sq ft)
+- \`tile_marble_carrara\` - Carrara Marble Tile ($15.50/sq ft)
+
+### Backsplash Materials  
+- \`mosaic_glass_azure\` - Trusa Azure Glass Mosaic ($18.75/sq ft)
+- \`subway_white_classic\` - Classic White Subway ($4.25/sq ft)
+- \`mosaic_stone_natural\` - Trusa Natural Stone Mosaic ($22.95/sq ft)
+- \`ceramic_herringbone_white\` - White Herringbone Ceramic ($12.25/sq ft)
+
+## Features
+
+### AI-Powered Surface Detection
+- Automatic floor, wall, and backsplash identification
+- Perspective correction for realistic overlays
+- Room type detection (kitchen, bathroom, etc.)
+
+### Realistic Material Application
+- Proper texture scaling and perspective
+- Lighting-aware color adjustment
+- High-quality material overlays
+
+### Cost Estimation
+- Material and installation pricing
+- Room dimension calculations
+- Regional pricing adjustments
+
+### Color Analysis (Paint Visualizer)
+- Color harmony recommendations
+- Mood and ambiance analysis
+- Paint requirement calculations
+
+## Rate Limits
+- Flooring/Backsplash: 15 requests per 15 minutes
+- Paint Colors: 20 requests per 15 minutes
+
+## Integration Tips
+1. Use high-quality room images for best results
+2. Ensure good lighting in uploaded photos
+3. Images work best when showing clear floor and wall areas
+4. Consider room type when selecting materials
+5. Use cost estimates for project planning
+
+Perfect for flooring showrooms, interior design tools, and e-commerce visualization!
+`;
     }
 
     /**

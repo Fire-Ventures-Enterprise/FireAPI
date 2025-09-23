@@ -98,7 +98,10 @@ class FireAPIProductionServer {
         try {
             // Load the main application
             const FireAPIApp = require('./app.js');
-            const app = new FireAPIApp();
+            const fireApiApp = new FireAPIApp();
+            
+            // Get the Express app instance
+            const app = fireApiApp.getApp();
             
             // Start server
             const server = app.listen(this.config.server.port, this.config.server.host, () => {

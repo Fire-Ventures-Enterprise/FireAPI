@@ -13,6 +13,7 @@ require('dotenv').config();
 const { FireBuildAPI } = require('./index.js');
 const MicroservicesIntegration = require('./microservices-integration');
 const APIKeyAuth = require('./api-key-auth');
+const FireAPIPublicKeyManager = require('./fireapi-public-key-management');
 const SecureComplianceRoutes = require('./secure-compliance-routes');
 
 class FireAPIApp {
@@ -27,8 +28,11 @@ class FireAPIApp {
         // Initialize microservices integration
         this.microservices = new MicroservicesIntegration();
         
-        // Initialize API key authentication
+        // Initialize API key authentication  
         this.apiKeyAuth = new APIKeyAuth();
+        
+        // Initialize public API key management for fireapi.dev
+        this.publicKeyManager = new FireAPIPublicKeyManager();
         
         // Initialize secure compliance routes
         this.secureCompliance = new SecureComplianceRoutes();
@@ -52,22 +56,61 @@ class FireAPIApp {
             },
         }));
 
-        // CORS configuration for fireapi.dev
+        // CORS configuration for fireapi.dev - Public API access
         this.app.use(cors({
-            origin: [
-                'https://firebuild.ai',
-                'https://www.firebuild.ai',
-                'https://fireapi.dev',
-                'https://www.fireapi.dev',
-                /\.firebuild\.ai$/,
-                /\.fireapi\.dev$/,
+            origin: function (origin, callback) {
+                // Allow requests with no origin (mobile apps, curl, postman, etc.)
+                if (!origin) return callback(null, true);
+                
+                // Allowed domains for web applications
+                const allowedDomains = [
+                    'https://firebuild.ai',
+                    'https://www.firebuild.ai',
+                    'https://fireapi.dev',
+                    'https://www.fireapi.dev'
+                ];
+                
+                // Allow any subdomain of fireapi.dev or firebuild.ai
+                const allowedPatterns = [
+                    /\.firebuild\.ai$/,
+                    /\.fireapi\.dev$/
+                ];
+                
                 // Allow localhost for development
-                /^http:\/\/localhost:\d+$/,
-                /^http:\/\/127\.0\.0\.1:\d+$/
-            ],
+                const developmentPatterns = [
+                    /^http:\/\/localhost:\d+$/,
+                    /^http:\/\/127\.0\.0\.1:\d+$/,
+                    /^https:\/\/localhost:\d+$/,
+                    /^https:\/\/127\.0\.0\.1:\d+$/
+                ];
+                
+                // Check if origin is allowed
+                if (allowedDomains.includes(origin) || 
+                    allowedPatterns.some(pattern => pattern.test(origin)) ||
+                    developmentPatterns.some(pattern => pattern.test(origin))) {
+                    return callback(null, true);
+                }
+                
+                // For public API, allow all HTTPS origins (with API key validation)
+                if (origin.startsWith('https://')) {
+                    return callback(null, true);
+                }
+                
+                callback(new Error('Not allowed by CORS'));
+            },
             credentials: true,
-            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-            allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'X-Client-ID']
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
+            allowedHeaders: [
+                'Content-Type', 
+                'Authorization', 
+                'X-API-Key', 
+                'X-Client-ID',
+                'Accept',
+                'Origin',
+                'User-Agent',
+                'Cache-Control'
+            ],
+            exposedHeaders: ['X-RateLimit-Remaining', 'X-RateLimit-Reset', 'X-Request-ID']
         }));
 
         // Compression and parsing

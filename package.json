@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
+    "production": "node start-fireapi-production.js",
+    "fireapi:start": "NODE_ENV=production node start-fireapi-production.js",
+    "fireapi:dev": "NODE_ENV=development nodemon app.js",
     "test": "node tests.js",
     "health": "node -e \"console.log('FireAPI Health Check:', require('./index.js').createAPI().healthCheck())\"",
     "docs": "node index.js docs"

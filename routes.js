@@ -6,12 +6,14 @@
 const FireBuildAIServer = require('./server.js');
 const SEOAPIService = require('./seo-api.js');
 const RoomVisualizerAPI = require('./room-visualizer-api.js');
+const ImageUploadHandler = require('./image-upload-handler.js');
 
 class APIRoutes {
     constructor() {
         this.server = new FireBuildAIServer();
         this.seoService = new SEOAPIService();
         this.visualizerService = new RoomVisualizerAPI();
+        this.imageHandler = new ImageUploadHandler();
         this.endpoints = this.defineEndpoints();
     }
 
@@ -346,6 +348,30 @@ class APIRoutes {
                     categories: 'array',
                     brands: 'array',
                     priceRanges: 'object'
+                }
+            },
+
+            'POST /api/visualizer/upload-image': {
+                description: 'Upload room image for visualization with validation and preprocessing',
+                parameters: {
+                    required: ['image'],
+                    optional: ['options'],
+                    example: {
+                        image: "multipart/form-data file upload",
+                        options: {
+                            generateThumbnail: true,
+                            analyzeImage: true
+                        }
+                    }
+                },
+                response: {
+                    success: 'boolean',
+                    imageId: 'string',
+                    imageUrl: 'string',
+                    dataUrl: 'string',
+                    metadata: 'object',
+                    analysis: 'object',
+                    thumbnail: 'string'
                 }
             },
 
@@ -697,6 +723,9 @@ class APIRoutes {
                 case 'GET /api/visualizer/materials':
                     return this.generateMaterialsCatalog(query);
 
+                case 'POST /api/visualizer/upload-image':
+                    return await this.handleImageUpload(body);
+
                 case 'GET /api/visualizer/integration':
                     return this.generateVisualizerIntegrationGuide(query.type);
 
@@ -785,6 +814,63 @@ class APIRoutes {
                 }, 0);
             }, 0)
         };
+    }
+
+    /**
+     * Handle image upload for room visualization
+     */
+    async handleImageUpload(body) {
+        try {
+            // Handle base64 image data from body
+            if (body.imageData && body.imageData.startsWith('data:image/')) {
+                const base64Data = body.imageData.split(',')[1];
+                const imageBuffer = Buffer.from(base64Data, 'base64');
+                
+                // Validate image
+                const validation = await this.imageHandler.validateImage(imageBuffer);
+                if (!validation.valid) {
+                    return {
+                        success: false,
+                        errors: validation.errors,
+                        warnings: validation.warnings
+                    };
+                }
+                
+                // Process the image
+                const processedImage = await this.imageHandler.processUploadedImage(
+                    imageBuffer,
+                    body.filename || 'room-image.jpg'
+                );
+                
+                // Generate thumbnail if requested
+                let thumbnail = null;
+                if (body.options?.generateThumbnail) {
+                    thumbnail = await this.imageHandler.generateThumbnail(imageBuffer);
+                }
+                
+                return {
+                    success: true,
+                    imageId: processedImage.id,
+                    imageUrl: processedImage.url,
+                    dataUrl: processedImage.dataUrl,
+                    metadata: processedImage.metadata,
+                    analysis: processedImage.analysis,
+                    thumbnail: thumbnail ? `data:image/jpeg;base64,${thumbnail}` : null,
+                    message: 'Image uploaded and processed successfully'
+                };
+            } else {
+                return {
+                    success: false,
+                    error: 'No valid image data provided. Expected base64 data URL.'
+                };
+            }
+        } catch (error) {
+            return {
+                success: false,
+                error: error.message,
+                timestamp: new Date().toISOString()
+            };
+        }
     }
 
     /**

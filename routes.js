@@ -8,6 +8,7 @@ const SEOAPIService = require('./seo-api.js');
 const RoomVisualizerAPI = require('./room-visualizer-api.js');
 const ImageUploadHandler = require('./image-upload-handler.js');
 const FlooringImportRoutes = require('./flooring-import-routes.js');
+const LiveCameraVisualizer = require('./live-camera-visualizer.js');
 
 class APIRoutes {
     constructor() {
@@ -15,6 +16,7 @@ class APIRoutes {
         this.seoService = new SEOAPIService();
         this.visualizerService = new RoomVisualizerAPI();
         this.imageHandler = new ImageUploadHandler();
+        this.liveCameraService = new LiveCameraVisualizer();
         
         // Initialize Flooring Import API with Supabase credentials (if available)
         const supabaseUrl = process.env.SUPABASE_URL || null;
@@ -736,6 +738,19 @@ class APIRoutes {
 
                 case 'POST /api/visualizer/upload-image':
                     return await this.handleImageUpload(body);
+
+                // Live Camera Endpoints
+                case 'POST /api/visualizer/camera/start':
+                    return await this.liveCameraService.startCameraSession(
+                        { body, headers: { 'x-api-key': body.apiKey } }, 
+                        { json: (data) => data }
+                    );
+
+                case 'GET /api/visualizer/materials/live':
+                    return await this.liveCameraService.getClientMaterials(
+                        { query, headers: { 'x-api-key': query.apiKey, origin: query.origin } },
+                        { json: (data) => data }
+                    );
 
                 case 'GET /api/visualizer/integration':
                     return this.generateVisualizerIntegrationGuide(query.type);
